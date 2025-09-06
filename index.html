@@ -23,12 +23,11 @@
   .btn-go{font-size:20px; padding:14px 28px; border-radius:16px;background:linear-gradient(180deg,#2b2f45,#191c2d);border:1px solid #3a3e55;box-shadow:0 8px 32px rgba(80,100,255,.25), inset 0 0 0 1px rgba(255,255,255,.03)}
   .btn-go .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#57a9ff;margin-right:10px;box-shadow:0 0 12px #57a9ff80}
 
-  /* Сцена: слева/справа большие счётчики, в центре колба */
+  /* Сцена */
   .stage{
     display:grid;
     grid-template-columns: minmax(140px, 18vw) 1fr minmax(140px, 18vw);
-    gap: 16px;
-    align-items:center;
+    gap: 16px; align-items:center;
   }
   .side{
     display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -42,22 +41,51 @@
   .side.left  .label .dot{background:var(--blue); box-shadow:0 0 18px #57a9ff80}
   .side.right .label .dot{background:var(--pink); box-shadow:0 0 18px #ff6fae80}
   .side .value{
-    font-weight:1000;
-    line-height:1;
-    margin-top:10px;
+    font-weight:1000; line-height:1; margin-top:10px;
     font-size: clamp(48px, 8vw, 140px);
     text-shadow: 0 8px 28px rgba(0,0,0,.35);
   }
 
-  .canvasWrap{position:relative;background:linear-gradient(180deg,#171a28,#0f1120);border:1px solid var(--border);border-radius:20px;padding:8px;display:grid;place-items:center;min-height:60vh}
+  .canvasWrap{
+    position:relative;
+    background:linear-gradient(180deg,#171a28,#0f1120);
+    border:1px solid var(--border); border-radius:20px; padding:8px;
+    display:grid; place-items:center; min-height:60vh; overflow:hidden;
+  }
   canvas{width:100%;height:72vh;display:block}
 
-  /* Пряталки на старте/в полноэкранном */
+  /* Финальный оверлей */
+  .overlay{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(800px 500px at 50% 40%, rgba(255,255,255,.08), rgba(0,0,0,.6));
+    backdrop-filter: blur(2px);
+    opacity:0; pointer-events:none; transition:opacity .6s ease;
+  }
+  .overlay.show{opacity:1}
+  .winnerCard{
+    text-align:center; padding:28px 40px; border-radius:24px;
+    background:rgba(13,16,32,.72); border:1px solid rgba(90,100,140,.35);
+    box-shadow:0 20px 80px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.04);
+    animation: pop .5s ease;
+  }
+  @keyframes pop{ from{ transform:scale(.96); opacity:.5 } to{ transform:scale(1); opacity:1 } }
+  .winTitle{
+    font-size: clamp(28px, 4vw, 48px); font-weight:1000; letter-spacing:.5px; margin:0 0 6px;
+    text-shadow: 0 6px 30px rgba(0,0,0,.55);
+  }
+  .winSub{
+    font-size: clamp(18px, 2.2vw, 24px); color:var(--muted); margin:0;
+  }
+  .glow{
+    position:absolute; inset:auto; width:60vmin; height:60vmin; border-radius:50%;
+    filter: blur(40px); opacity:.55; pointer-events:none; transform:translate(-50%,-50%);
+    left:50%; top:50%;
+  }
+
   .hidden{display:none !important}
   body.fs .wrap{padding-top:6px}
   body.fs canvas{height:78vh}
 
-  /* На узких экранах боковые счётчики прячем */
   @media (max-width: 900px){
     .stage{grid-template-columns: 1fr}
     .side{display:none}
@@ -87,16 +115,27 @@
   </div>
 
   <section class="stage">
-    <!-- Левый большой счётчик (мальчик) -->
     <aside class="side left">
       <div class="label"><span class="dot"></span>Мальчик</div>
       <div class="value" id="cntBoyBig">0</div>
     </aside>
 
-    <!-- Колба -->
-    <div class="canvasWrap"><canvas id="scene"></canvas></div>
+    <div class="canvasWrap" id="stage">
+      <canvas id="scene"></canvas>
 
-    <!-- Правый большой счётчик (девочка) -->
+      <!-- Конфетти-канва сверху -->
+      <canvas id="confetti" class="hidden" style="position:absolute;inset:0;"></canvas>
+
+      <!-- Оверлей победителя -->
+      <div id="overlay" class="overlay">
+        <div class="glow" id="glow"></div>
+        <div class="winnerCard">
+          <h1 class="winTitle" id="winTitle">Победитель</h1>
+          <p class="winSub" id="winSub">Все голоса учтены</p>
+        </div>
+      </div>
+    </div>
+
     <aside class="side right">
       <div class="label"><span class="dot"></span>Девочка</div>
       <div class="value" id="cntGirlBig">0</div>
@@ -109,10 +148,10 @@
 const SOURCE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScUpoDoG9BZOfEGgNdecule2fc6mVQBYVCMB5JjksJLZD2Pw48jb9G1wqWqmuuBM2XS2p3lxBm3Dj8/pub?gid=1307519951&single=true&output=csv";
 
 /* ===== Настройки ===== */
-const POLL_MS = 2000;             // опрос таблицы
-const FALL_DURATION = 1000;       // падение 1 сек
-const START_SPACING_MS = 1000;    // старт нового шара каждые 1 сек
-const CAPACITY = 70;              // визуальная вместимость банки
+const POLL_MS = 2000;
+const FALL_DURATION = 1000;
+const START_SPACING_MS = 1000;
+const CAPACITY = 70;
 const MAX_BALLS_DRAWN = CAPACITY;
 
 /* ===== Глобальные ===== */
@@ -130,22 +169,24 @@ const goBtn       = document.getElementById('goBtn');
 const topbar      = document.getElementById('topbar');
 const ctaRow      = document.getElementById('ctaRow');
 
+const overlay     = document.getElementById('overlay');
+const winTitle    = document.getElementById('winTitle');
+const winSub      = document.getElementById('winSub');
+const glow        = document.getElementById('glow');
+
 let serverSeq = [];   // ['boy','girl', ...]
-let animatedN = 0;    // визуально уложено (до CAPACITY)
-let balls = [];       // активные шары
+let animatedN = 0;
+let balls = [];
 let score = { boy:0, girl:0 };
 let started = false;
+let finishShownFor = -1; // число голосов, для которых уже показывали финал
 
+/* ========= helpers ========= */
 function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
-function toggleFullscreen(){
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen().catch(()=>{});
-  } else {
-    document.exitFullscreen().catch(()=>{});
-  }
-}
+function toggleFullscreen(){ if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); else document.exitFullscreen().catch(()=>{}); }
+function jarCornerRadius(){ return Math.min(90, jar.w * 0.16); }
 
-/* ===== Ресайз/банка ===== */
+/* ========= resize & jar ========= */
 function onResize(){
   const rect = document.querySelector('.canvasWrap').getBoundingClientRect();
   const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -159,20 +200,11 @@ function onResize(){
   jar.neckW = clamp(rect.width*0.12, 120, 220);
   jar.neckH = clamp(rect.height*0.07, 50, 90);
   jar.wall  = clamp(rect.width*0.012, 10, 22);
+
+  // конфетти canvas синхронизируем
+  sizeConfettiCanvas();
 }
 addEventListener('resize', onResize);
-
-/* Привязка классов при входе/выходе из полноэкранного */
-document.addEventListener('fullscreenchange', () => {
-  if (document.fullscreenElement) {
-    document.body.classList.add('fs');
-  } else {
-    document.body.classList.remove('fs');
-    // Если вышли из fullscreen, можно вернуть верхнюю панель/кнопку (по желанию)
-    // topbar.classList.remove('hidden');
-    // ctaRow.classList.remove('hidden');
-  }
-});
 
 function drawJar(){
   const {x,y,w,h,neckW,neckH,wall} = jar;
@@ -182,7 +214,7 @@ function drawJar(){
   ctx.strokeStyle = 'rgba(230,235,255,0.9)';
   ctx.fillStyle = 'rgba(255,255,255,0.02)';
   ctx.beginPath();
-  const r = Math.min(90, w*0.16);
+  const r = jarCornerRadius();
   ctx.moveTo(w/2 - neckW/2, 0);
   ctx.lineTo(w/2 - neckW/2, neckH);
   ctx.lineTo(w - r, neckH);
@@ -200,17 +232,19 @@ function drawJar(){
   ctx.fill(); ctx.stroke();
   ctx.restore();
 }
+
 function jarInnerRect(){
+  const r = jarCornerRadius();
   const {x,y,w,h,neckW,neckH,wall} = jar;
   return {
-    left:   x - w/2 + wall*1.2,
-    right:  x + w/2 - wall*1.2,
-    top:    y - h + neckH + wall*1.2,
-    bottom: y - wall*1.4
+    left:   x - w/2 + wall*1.2 + r*0.05,
+    right:  x + w/2 - wall*1.2 - r*0.05,
+    top:    y - h + neckH + wall*1.2 + r*0.15,
+    bottom: y - wall*1.2 - r*0.75
   };
 }
 
-/* ===== Компоновка: крупные шары, почти до верха при CAPACITY ===== */
+/* ========= layout ========= */
 function layoutPositions(totalBalls){
   const inner = jarInnerRect();
   const width = inner.right - inner.left;
@@ -244,7 +278,7 @@ function layoutPositions(totalBalls){
   return positions;
 }
 
-/* ===== Анимация ===== */
+/* ========= animation ========= */
 function animateNewBalls(seqSlice){
   if (!seqSlice.length) return;
 
@@ -271,6 +305,7 @@ function animateNewBalls(seqSlice){
       setTimeout(()=>{
         if (color==='boy') score.boy++; else score.girl++;
         updateScoreUI();
+        checkFinish();
       }, i*spacing + fallDur);
     }
   }
@@ -309,21 +344,17 @@ function render(){
       b.landed = true;
       if (b.color==='boy') score.boy++; else score.girl++;
       updateScoreUI();
+      checkFinish();
     }
   }
   requestAnimationFrame(render);
 }
 
+/* ========= UI & finish ========= */
 function updateScoreUI(){
-  // маленькие в шапке
-  cntBoySmall.textContent = score.boy;
-  cntGirlSmall.textContent= score.girl;
-  // большие по бокам
-  cntBoyBig.textContent   = score.boy;
-  cntGirlBig.textContent  = score.girl;
-
+  cntBoySmall.textContent = score.boy; cntGirlSmall.textContent= score.girl;
+  cntBoyBig.textContent   = score.boy; cntGirlBig.textContent  = score.girl;
   cntTotalEl.textContent  = score.boy + score.girl;
-
   const scale = Math.max(1, Math.ceil((serverSeq.length||1)/CAPACITY));
   scaleInfo.textContent   = `1 шарик = ${scale} голос${pluralRu(scale,['','а','ов'])}`;
 }
@@ -334,7 +365,7 @@ function pluralRu(n, forms){
   return forms[2];
 }
 
-/* ===== Чтение CSV ===== */
+/* ========= CSV ========= */
 function normalizeChoice(v){
   const s = (v||"").toLowerCase();
   if (s.includes("маль") || s.includes("boy") || s.includes("голуб")) return "boy";
@@ -354,7 +385,7 @@ function parseCsv(text){
   return rows;
 }
 
-/* ===== Загрузка и старт ===== */
+/* ========= Загрузка и старт ========= */
 async function fetchSeq(){
   const url = SOURCE_URL + (SOURCE_URL.includes('?')?'&':'?') + 'nocache=' + Date.now();
   const res = await fetch(url, {cache:'no-store'});
@@ -363,8 +394,8 @@ async function fetchSeq(){
 
   const rows = parseCsv(text).filter(r => r.length >= 2);
   const seq = [];
-  for (let i=1;i<rows.length;i++){ // пропускаем заголовок
-    const val = (rows[i][1]||"").toString().trim(); // колонка B
+  for (let i=1;i<rows.length;i++){
+    const val = (rows[i][1]||"").toString().trim();
     const norm = normalizeChoice(val);
     if (norm) seq.push(norm);
   }
@@ -372,25 +403,19 @@ async function fetchSeq(){
   serverSeq = seq;
   const scale = Math.max(1, Math.ceil((serverSeq.length||1)/CAPACITY));
   scaleInfo.textContent = `1 шарик = ${scale} голос${pluralRu(scale,['','а','ов'])}`;
+  // если уже показывали финал, а ответов стало больше — спрячем финал до следующего завершения
+  if (finishShownFor >= 0 && (score.boy + score.girl) < serverSeq.length) hideWinner();
 }
 
 async function startShow(){
   if (started) return;
   started = true;
 
-  // 1) Fullscreen (не критично, если не получится)
   try { await document.documentElement.requestFullscreen(); } catch(e) {}
+  topbar.classList.add('hidden'); ctaRow.classList.add('hidden'); document.body.classList.add('fs');
 
-  // 2) Прячем верхнюю панель и кнопку
-  topbar.classList.add('hidden');
-  ctaRow.classList.add('hidden');
-  document.body.classList.add('fs');
-
-  // 3) Сброс и запуск анимации
-  balls = [];
-  score = { boy:0, girl:0 };
-  animatedN = 0;
-  updateScoreUI();
+  balls = []; score = { boy:0, girl:0 }; animatedN = 0; finishShownFor = -1;
+  hideWinner(); updateScoreUI();
 
   if (serverSeq.length){
     const firstBatch = serverSeq.slice(0, CAPACITY);
@@ -401,7 +426,7 @@ async function startShow(){
         const color = serverSeq[CAPACITY + i];
         setTimeout(()=>{
           if (color==='boy') score.boy++; else score.girl++;
-          updateScoreUI();
+          updateScoreUI(); checkFinish();
         }, (animatedN + i) * START_SPACING_MS + FALL_DURATION);
       }
     }
@@ -417,11 +442,111 @@ function forceRefresh(){
   }).catch(()=>{});
 }
 
-/* ===== Старт ===== */
+/* ========= Финал: показ победителя + конфетти ========= */
+function checkFinish(){
+  const totalNow = score.boy + score.girl;
+  if (!started) return;
+  if (serverSeq.length === 0) return;
+  if (totalNow < serverSeq.length) return;
+  if (finishShownFor === serverSeq.length) return; // уже показывали для этой партии
+
+  const boy = score.boy, girl = score.girl;
+  const winner = boy > girl ? 'boy' : (girl > boy ? 'girl' : 'tie');
+
+  if (winner === 'tie'){
+    showWinner('Ничья!', 'Вы потрясающая команда ♥', '#9aa0ad');
+  } else if (winner === 'boy'){
+    showWinner('Победил МАЛЬЧИК!', 'Поздравляем родителей!', getComputedStyle(document.documentElement).getPropertyValue('--blue'));
+  } else {
+    showWinner('Победила ДЕВОЧКА!', 'Поздравляем родителей!', getComputedStyle(document.documentElement).getPropertyValue('--pink'));
+  }
+  finishShownFor = serverSeq.length;
+}
+
+function showWinner(title, subtitle, color){
+  winTitle.textContent = title;
+  winSub.textContent = subtitle;
+  glow.style.background = color.trim();
+  overlay.classList.add('show');
+  startConfetti(color);
+}
+function hideWinner(){
+  overlay.classList.remove('show');
+  stopConfetti();
+}
+
+/* ========= Конфетти (простая реализация) ========= */
+const confettiCanvas = document.getElementById('confetti');
+const cctx = confettiCanvas.getContext('2d');
+let confettiTimer = null;
+let confettiParts = [];
+
+function sizeConfettiCanvas(){
+  const rect = document.getElementById('stage').getBoundingClientRect();
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  confettiCanvas.width = Math.floor(rect.width * dpr);
+  confettiCanvas.height= Math.floor(rect.height * dpr);
+  cctx.setTransform(dpr,0,0,dpr,0,0);
+}
+
+function startConfetti(accent){
+  sizeConfettiCanvas();
+  confettiCanvas.classList.remove('hidden');
+  confettiParts = [];
+  const colors = [
+    accent.trim(),
+    '#ffffff',
+    'rgba(255,255,255,.6)',
+    accent.replace(')',', .6)').replace('rgb','rgba')
+  ];
+
+  const W = confettiCanvas.width, H = confettiCanvas.height;
+  const count = 150;
+
+  for (let i=0;i<count;i++){
+    confettiParts.push({
+      x: Math.random()*W, y: -Math.random()*H*0.3,
+      r: 4 + Math.random()*4,
+      s: 1 + Math.random()*2,
+      a: Math.random()*Math.PI*2,
+      v: 30 + Math.random()*70,
+      col: colors[i % colors.length]
+    });
+  }
+
+  let last = performance.now();
+  function tick(){
+    const now = performance.now();
+    const dt = Math.min(0.033, (now-last)/1000); last=now;
+
+    cctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+    for (const p of confettiParts){
+      p.y += p.v * dt; p.x += Math.sin(p.a += dt*5) * 30 * dt;
+      cctx.beginPath(); cctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      cctx.fillStyle = p.col; cctx.fill();
+    }
+    confettiTimer = requestAnimationFrame(tick);
+  }
+  confettiTimer = requestAnimationFrame(tick);
+
+  // авто-стоп через 8 секунд
+  setTimeout(stopConfetti, 8000);
+}
+function stopConfetti(){
+  if (confettiTimer){ cancelAnimationFrame(confettiTimer); confettiTimer = null; }
+  confettiCanvas.classList.add('hidden');
+}
+
+/* ========= boot ========= */
 onResize();
 requestAnimationFrame(render);
 fetchSeq();
 setInterval(fetchSeq, POLL_MS);
+
+document.addEventListener('fullscreenchange', () => {
+  if (document.fullscreenElement) document.body.classList.add('fs');
+  else document.body.classList.remove('fs');
+});
 </script>
 </body>
 </html>
