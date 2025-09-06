@@ -9,88 +9,41 @@
   *{box-sizing:border-box}
   html,body{margin:0;height:100%;background:radial-gradient(1200px 800px at 30% 15%, #1a1d2c, var(--bg));color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto}
   .wrap{min-height:100%;padding:16px;display:grid;grid-template-rows:auto auto 1fr;gap:12px}
-  header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-radius:16px;background:linear-gradient(180deg,#1b1e2c,#101320);border:1px solid var(--border); transition:opacity .2s ease}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-radius:16px;background:linear-gradient(180deg,#1b1e2c,#101320);border:1px solid var(--border)}
   .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
   .pill{padding:10px 14px;border-radius:999px;background:#0d1020;border:1px solid #272a38;font-weight:800}
   .pill .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px;vertical-align:middle}
   .pill.pink .dot{background:var(--pink)} .pill.blue .dot{background:var(--blue)}
   .muted{color:var(--muted)}
 
-  /* Кнопки */
-  .cta{width:100%; display:flex; justify-content:center; transition:opacity .2s ease}
-  .btn{appearance:none;border:none;cursor:pointer;padding:10px 16px;border-radius:12px;background:#0d1020;border:1px solid #292c3a;color:#e9ecf3;font-weight:700;transition:transform .05s ease}
-  .btn:active{transform:translateY(1px)} .btn[disabled]{opacity:.6;cursor:default}
+  .cta{width:100%; display:flex; justify-content:center}
+  .btn{appearance:none;border:none;cursor:pointer;padding:10px 16px;border-radius:12px;background:#0d1020;border:1px solid #292c3a;color:#e9ecf3;font-weight:700}
   .btn-go{font-size:20px; padding:14px 28px; border-radius:16px;background:linear-gradient(180deg,#2b2f45,#191c2d);border:1px solid #3a3e55;box-shadow:0 8px 32px rgba(80,100,255,.25), inset 0 0 0 1px rgba(255,255,255,.03)}
   .btn-go .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#57a9ff;margin-right:10px;box-shadow:0 0 12px #57a9ff80}
 
-  /* Сцена */
-  .stage{
-    display:grid;
-    grid-template-columns: minmax(140px, 18vw) 1fr minmax(140px, 18vw);
-    gap: 16px; align-items:center;
-  }
-  .side{
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    background:linear-gradient(180deg,#171a28,#0f1120);
-    border:1px solid var(--border); border-radius:20px; padding:16px 10px;
-  }
-  .side .label{
-    display:flex; align-items:center; gap:10px; font-weight:900; letter-spacing:.5px; text-transform:uppercase; opacity:.9
-  }
+  .stage{display:grid;grid-template-columns:minmax(140px,18vw) 1fr minmax(140px,18vw);gap:16px;align-items:center}
+  .side{display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,#171a28,#0f1120);border:1px solid var(--border);border-radius:20px;padding:16px 10px}
+  .side .label{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;opacity:.9}
   .side .label .dot{width:14px;height:14px;border-radius:50%}
   .side.left  .label .dot{background:var(--blue); box-shadow:0 0 18px #57a9ff80}
   .side.right .label .dot{background:var(--pink); box-shadow:0 0 18px #ff6fae80}
-  .side .value{
-    font-weight:1000; line-height:1; margin-top:10px;
-    font-size: clamp(48px, 8vw, 140px);
-    text-shadow: 0 8px 28px rgba(0,0,0,.35);
-  }
+  .side .value{font-weight:1000;line-height:1;margin-top:10px;font-size:clamp(48px,8vw,140px);text-shadow:0 8px 28px rgba(0,0,0,.35)}
 
-  .canvasWrap{
-    position:relative;
-    background:linear-gradient(180deg,#171a28,#0f1120);
-    border:1px solid var(--border); border-radius:20px; padding:8px;
-    display:grid; place-items:center; min-height:60vh; overflow:hidden;
-  }
+  .canvasWrap{position:relative;background:linear-gradient(180deg,#171a28,#0f1120);border:1px solid var(--border);border-radius:20px;padding:8px;display:grid;place-items:center;min-height:60vh;overflow:hidden}
   canvas{width:100%;height:72vh;display:block}
 
-  /* Финальный оверлей */
-  .overlay{
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    background:radial-gradient(800px 500px at 50% 40%, rgba(255,255,255,.08), rgba(0,0,0,.6));
-    backdrop-filter: blur(2px);
-    opacity:0; pointer-events:none; transition:opacity .6s ease;
-  }
+  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(800px 500px at 50% 40%, rgba(255,255,255,.08), rgba(0,0,0,.6));backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .6s ease}
   .overlay.show{opacity:1}
-  .winnerCard{
-    text-align:center; padding:28px 40px; border-radius:24px;
-    background:rgba(13,16,32,.72); border:1px solid rgba(90,100,140,.35);
-    box-shadow:0 20px 80px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.04);
-    animation: pop .5s ease;
-  }
-  @keyframes pop{ from{ transform:scale(.96); opacity:.5 } to{ transform:scale(1); opacity:1 } }
-  .winTitle{
-    font-size: clamp(28px, 4vw, 48px); font-weight:1000; letter-spacing:.5px; margin:0 0 6px;
-    text-shadow: 0 6px 30px rgba(0,0,0,.55);
-  }
-  .winSub{
-    font-size: clamp(18px, 2.2vw, 24px); color:var(--muted); margin:0;
-  }
-  .glow{
-    position:absolute; inset:auto; width:60vmin; height:60vmin; border-radius:50%;
-    filter: blur(40px); opacity:.55; pointer-events:none; transform:translate(-50%,-50%);
-    left:50%; top:50%;
-  }
+  .winnerCard{text-align:center;padding:28px 40px;border-radius:24px;background:rgba(13,16,32,.72);border:1px solid rgba(90,100,140,.35);box-shadow:0 20px 80px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.04)}
+  .winTitle{font-size:clamp(28px,4vw,48px);font-weight:1000;margin:0 0 6px}
+  .winSub{font-size:clamp(18px,2.2vw,24px);color:var(--muted);margin:0}
+  .glow{position:absolute;inset:auto;width:60vmin;height:60vmin;border-radius:50%;filter:blur(40px);opacity:.55;pointer-events:none;transform:translate(-50%,-50%);left:50%;top:50%}
 
-  .hidden{display:none !important}
+  .hidden{display:none!important}
   body.fs .wrap{padding-top:6px}
   body.fs canvas{height:78vh}
 
-  @media (max-width: 900px){
-    .stage{grid-template-columns: 1fr}
-    .side{display:none}
-    canvas{height:65vh}
-  }
+  @media (max-width:900px){.stage{grid-template-columns:1fr}.side{display:none}canvas{height:65vh}}
 </style>
 </head>
 <body>
@@ -109,9 +62,7 @@
   </header>
 
   <div class="cta" id="ctaRow">
-    <button id="goBtn" class="btn btn-go" onclick="startShow()">
-      <span class="dot"></span>Поехали
-    </button>
+    <button id="goBtn" class="btn btn-go" onclick="startShow()"><span class="dot"></span>Поехали</button>
   </div>
 
   <section class="stage">
@@ -122,11 +73,7 @@
 
     <div class="canvasWrap" id="stage">
       <canvas id="scene"></canvas>
-
-      <!-- Конфетти-канва сверху -->
       <canvas id="confetti" class="hidden" style="position:absolute;inset:0;"></canvas>
-
-      <!-- Оверлей победителя -->
       <div id="overlay" class="overlay">
         <div class="glow" id="glow"></div>
         <div class="winnerCard">
@@ -144,17 +91,17 @@
 </div>
 
 <script>
-/* ===== ССЫЛКА НА CSV ВАШЕГО ЛИСТА ===== */
+/* ===== CSV из Google Sheets ===== */
 const SOURCE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScUpoDoG9BZOfEGgNdecule2fc6mVQBYVCMB5JjksJLZD2Pw48jb9G1wqWqmuuBM2XS2p3lxBm3Dj8/pub?gid=1307519951&single=true&output=csv";
 
 /* ===== Настройки ===== */
 const POLL_MS = 2000;
 const FALL_DURATION = 1000;
 const START_SPACING_MS = 1000;
-const CAPACITY = 70;
-const MAX_BALLS_DRAWN = CAPACITY;
+const CAPACITY = 60;            // ← максимум в колбе
+const TARGET_FILL = 0.95;       // ← стараемся занять 95% высоты
 
-/* ===== Глобальные ===== */
+/* ===== Переменные ===== */
 const canvas = document.getElementById('scene');
 const ctx = canvas.getContext('2d');
 let jar = { x: 700, y: 820, w: 520, h: 620, neckW: 180, neckH: 70, wall: 16 };
@@ -165,7 +112,6 @@ const cntBoyBig   = document.getElementById('cntBoyBig');
 const cntGirlBig  = document.getElementById('cntGirlBig');
 const cntTotalEl  = document.getElementById('cntTotal');
 const scaleInfo   = document.getElementById('scaleInfo');
-const goBtn       = document.getElementById('goBtn');
 const topbar      = document.getElementById('topbar');
 const ctaRow      = document.getElementById('ctaRow');
 
@@ -174,19 +120,19 @@ const winTitle    = document.getElementById('winTitle');
 const winSub      = document.getElementById('winSub');
 const glow        = document.getElementById('glow');
 
-let serverSeq = [];   // ['boy','girl', ...]
+let serverSeq = [];
 let animatedN = 0;
 let balls = [];
 let score = { boy:0, girl:0 };
 let started = false;
-let finishShownFor = -1; // число голосов, для которых уже показывали финал
+let finishShownFor = -1;
 
-/* ========= helpers ========= */
+/* ===== Утилиты ===== */
 function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
 function toggleFullscreen(){ if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); else document.exitFullscreen().catch(()=>{}); }
 function jarCornerRadius(){ return Math.min(90, jar.w * 0.16); }
 
-/* ========= resize & jar ========= */
+/* ===== Размеры/банка ===== */
 function onResize(){
   const rect = document.querySelector('.canvasWrap').getBoundingClientRect();
   const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -200,8 +146,6 @@ function onResize(){
   jar.neckW = clamp(rect.width*0.12, 120, 220);
   jar.neckH = clamp(rect.height*0.07, 50, 90);
   jar.wall  = clamp(rect.width*0.012, 10, 22);
-
-  // конфетти canvas синхронизируем
   sizeConfettiCanvas();
 }
 addEventListener('resize', onResize);
@@ -230,55 +174,66 @@ function drawJar(){
   ctx.lineTo(w/2 - neckW/2, 0);
   ctx.closePath();
   ctx.fill(); ctx.stroke();
-  ctx.restore();
 }
 
 function jarInnerRect(){
   const r = jarCornerRadius();
   const {x,y,w,h,neckW,neckH,wall} = jar;
   return {
-    left:   x - w/2 + wall*1.2 + r*0.05,
-    right:  x + w/2 - wall*1.2 - r*0.05,
+    left:   x - w/2 + wall*1.2 + r*0.08,
+    right:  x + w/2 - wall*1.2 - r*0.08,
     top:    y - h + neckH + wall*1.2 + r*0.15,
-    bottom: y - wall*1.2 - r*0.75
+    bottom: y - wall*0.7
   };
 }
 
-/* ========= layout ========= */
+/* ===== КОМПАКТНАЯ РАССТАНОВКА КРУПНЫХ ШАРОВ =====
+   Подбираем число колонок ~ пропорционально ширине/высоте,
+   затем берём R как минимум из ограничений по ширине и высоте. */
 function layoutPositions(totalBalls){
   const inner = jarInnerRect();
-  const width = inner.right - inner.left;
-  const height = inner.bottom - inner.top;
+  const W = inner.right - inner.left;
+  const H = inner.bottom - inner.top;
 
   const need = Math.min(totalBalls, CAPACITY);
-  const targetFill = 0.90;
+  if (need <= 0) return [];
 
-  let r = Math.max(8, Math.floor(width / 20));
-  let step = r*2 + 4;
-  let cols = Math.max(1, Math.floor(width / step));
+  const pad = 4;     // зазор между шарами
+  const fillH = H * TARGET_FILL;
+
+  // Желаемое число колонок по соотношению сторон (чтобы шары были крупнее)
+  let cols = Math.max(1, Math.round(Math.sqrt(need * (W / fillH))));
+  cols = Math.min(need, cols);
   let rows = Math.ceil(need / cols);
-  const maxH = height * targetFill;
 
-  if (rows * step > maxH) {
-    r = Math.floor((maxH / rows - 4) / 2);
-    r = Math.max(6, r);
-    step = r*2 + 4;
-    cols = Math.max(1, Math.floor(width / step));
-    rows = Math.ceil(need / cols);
+  // Радиус ограничен шириной и высотой
+  let rW = (W / cols - pad) / 2;
+  let rH = (fillH / rows - pad) / 2;
+  let r = Math.floor(Math.max(8, Math.min(rW, rH)));
+
+  // Если по высоте не влезаем, увеличим кол-во колонок (уменьшим ряды)
+  while ((rows * (2*r + pad)) > fillH && cols < need){
+    cols++; rows = Math.ceil(need / cols);
+    rW = (W / cols - pad) / 2;
+    rH = (fillH / rows - pad) / 2;
+    r = Math.floor(Math.max(8, Math.min(rW, rH)));
   }
+
+  const stepX = 2*r + pad;
+  const stepY = 2*r + pad;
 
   const positions = [];
   let row = 0, col = 0;
   for (let i=0;i<need;i++){
-    const px = inner.left + (col + 0.5)*step;
-    const py = inner.bottom - (row + 0.5)*step;
-    positions.push({x:px, y:py, r});
-    col++; if (col >= cols) { col=0; row++; }
+    const x = inner.left + (col + 0.5)*stepX + (W - cols*stepX)/2; // центрируем по горизонтали
+    const y = inner.bottom - (row + 0.5)*stepY;
+    positions.push({x, y, r});
+    col++; if (col >= cols) { col = 0; row++; }
   }
   return positions;
 }
 
-/* ========= animation ========= */
+/* ===== Анимация ===== */
 function animateNewBalls(seqSlice){
   if (!seqSlice.length) return;
 
@@ -304,8 +259,7 @@ function animateNewBalls(seqSlice){
     } else {
       setTimeout(()=>{
         if (color==='boy') score.boy++; else score.girl++;
-        updateScoreUI();
-        checkFinish();
+        updateScoreUI(); checkFinish();
       }, i*spacing + fallDur);
     }
   }
@@ -343,14 +297,13 @@ function render(){
     if (t>=1 && !b.landed){
       b.landed = true;
       if (b.color==='boy') score.boy++; else score.girl++;
-      updateScoreUI();
-      checkFinish();
+      updateScoreUI(); checkFinish();
     }
   }
   requestAnimationFrame(render);
 }
 
-/* ========= UI & finish ========= */
+/* ===== Счётчики и финал ===== */
 function updateScoreUI(){
   cntBoySmall.textContent = score.boy; cntGirlSmall.textContent= score.girl;
   cntBoyBig.textContent   = score.boy; cntGirlBig.textContent  = score.girl;
@@ -358,14 +311,8 @@ function updateScoreUI(){
   const scale = Math.max(1, Math.ceil((serverSeq.length||1)/CAPACITY));
   scaleInfo.textContent   = `1 шарик = ${scale} голос${pluralRu(scale,['','а','ов'])}`;
 }
-function pluralRu(n, forms){
-  const n10=n%10,n100=n%100;
-  if(n10===1&&n100!==11)return forms[0];
-  if(n10>=2&&n10<=4&&(n100<10||n100>=20))return forms[1];
-  return forms[2];
-}
+function pluralRu(n, forms){ const n10=n%10,n100=n%100; if(n10===1&&n100!==11)return forms[0]; if(n10>=2&&n10<=4&&(n100<10||n100>=20))return forms[1]; return forms[2]; }
 
-/* ========= CSV ========= */
 function normalizeChoice(v){
   const s = (v||"").toLowerCase();
   if (s.includes("маль") || s.includes("boy") || s.includes("голуб")) return "boy";
@@ -385,7 +332,7 @@ function parseCsv(text){
   return rows;
 }
 
-/* ========= Загрузка и старт ========= */
+/* ===== Данные и запуск ===== */
 async function fetchSeq(){
   const url = SOURCE_URL + (SOURCE_URL.includes('?')?'&':'?') + 'nocache=' + Date.now();
   const res = await fetch(url, {cache:'no-store'});
@@ -403,14 +350,12 @@ async function fetchSeq(){
   serverSeq = seq;
   const scale = Math.max(1, Math.ceil((serverSeq.length||1)/CAPACITY));
   scaleInfo.textContent = `1 шарик = ${scale} голос${pluralRu(scale,['','а','ов'])}`;
-  // если уже показывали финал, а ответов стало больше — спрячем финал до следующего завершения
   if (finishShownFor >= 0 && (score.boy + score.girl) < serverSeq.length) hideWinner();
 }
 
 async function startShow(){
   if (started) return;
   started = true;
-
   try { await document.documentElement.requestFullscreen(); } catch(e) {}
   topbar.classList.add('hidden'); ctaRow.classList.add('hidden'); document.body.classList.add('fs');
 
@@ -442,17 +387,13 @@ function forceRefresh(){
   }).catch(()=>{});
 }
 
-/* ========= Финал: показ победителя + конфетти ========= */
+/* ===== Победитель + конфетти ===== */
 function checkFinish(){
   const totalNow = score.boy + score.girl;
-  if (!started) return;
-  if (serverSeq.length === 0) return;
-  if (totalNow < serverSeq.length) return;
-  if (finishShownFor === serverSeq.length) return; // уже показывали для этой партии
+  if (!started || serverSeq.length === 0 || totalNow < serverSeq.length) return;
+  if (finishShownFor === serverSeq.length) return;
 
-  const boy = score.boy, girl = score.girl;
-  const winner = boy > girl ? 'boy' : (girl > boy ? 'girl' : 'tie');
-
+  const winner = score.boy > score.girl ? 'boy' : (score.girl > score.boy ? 'girl' : 'tie');
   if (winner === 'tie'){
     showWinner('Ничья!', 'Вы потрясающая команда ♥', '#9aa0ad');
   } else if (winner === 'boy'){
@@ -464,23 +405,15 @@ function checkFinish(){
 }
 
 function showWinner(title, subtitle, color){
-  winTitle.textContent = title;
-  winSub.textContent = subtitle;
-  glow.style.background = color.trim();
-  overlay.classList.add('show');
-  startConfetti(color);
+  winTitle.textContent = title; winSub.textContent = subtitle; glow.style.background = color.trim();
+  overlay.classList.add('show'); startConfetti(color);
 }
-function hideWinner(){
-  overlay.classList.remove('show');
-  stopConfetti();
-}
+function hideWinner(){ overlay.classList.remove('show'); stopConfetti(); }
 
-/* ========= Конфетти (простая реализация) ========= */
+/* ===== Конфетти (простое) ===== */
 const confettiCanvas = document.getElementById('confetti');
 const cctx = confettiCanvas.getContext('2d');
-let confettiTimer = null;
-let confettiParts = [];
-
+let confettiTimer = null, confettiParts = [];
 function sizeConfettiCanvas(){
   const rect = document.getElementById('stage').getBoundingClientRect();
   const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -488,65 +421,34 @@ function sizeConfettiCanvas(){
   confettiCanvas.height= Math.floor(rect.height * dpr);
   cctx.setTransform(dpr,0,0,dpr,0,0);
 }
-
 function startConfetti(accent){
   sizeConfettiCanvas();
   confettiCanvas.classList.remove('hidden');
   confettiParts = [];
-  const colors = [
-    accent.trim(),
-    '#ffffff',
-    'rgba(255,255,255,.6)',
-    accent.replace(')',', .6)').replace('rgb','rgba')
-  ];
-
-  const W = confettiCanvas.width, H = confettiCanvas.height;
-  const count = 150;
-
+  const colors = [accent.trim(), '#ffffff', 'rgba(255,255,255,.6)'];
+  const W = confettiCanvas.width, H = confettiCanvas.height, count = 150;
   for (let i=0;i<count;i++){
-    confettiParts.push({
-      x: Math.random()*W, y: -Math.random()*H*0.3,
-      r: 4 + Math.random()*4,
-      s: 1 + Math.random()*2,
-      a: Math.random()*Math.PI*2,
-      v: 30 + Math.random()*70,
-      col: colors[i % colors.length]
-    });
+    confettiParts.push({x:Math.random()*W, y:-Math.random()*H*0.3, r:4+Math.random()*4, a:Math.random()*Math.PI*2, v:30+Math.random()*70, col:colors[i%colors.length]});
   }
-
   let last = performance.now();
   function tick(){
-    const now = performance.now();
-    const dt = Math.min(0.033, (now-last)/1000); last=now;
-
-    cctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
-    for (const p of confettiParts){
-      p.y += p.v * dt; p.x += Math.sin(p.a += dt*5) * 30 * dt;
-      cctx.beginPath(); cctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-      cctx.fillStyle = p.col; cctx.fill();
-    }
+    const now = performance.now(); const dt = Math.min(0.033, (now-last)/1000); last=now;
+    cctx.clearRect(0,0,W,H);
+    for (const p of confettiParts){ p.y += p.v*dt; p.x += Math.sin(p.a += dt*5)*30*dt; cctx.beginPath(); cctx.arc(p.x,p.y,p.r,0,Math.PI*2); cctx.fillStyle=p.col; cctx.fill(); }
     confettiTimer = requestAnimationFrame(tick);
   }
   confettiTimer = requestAnimationFrame(tick);
-
-  // авто-стоп через 8 секунд
   setTimeout(stopConfetti, 8000);
 }
-function stopConfetti(){
-  if (confettiTimer){ cancelAnimationFrame(confettiTimer); confettiTimer = null; }
-  confettiCanvas.classList.add('hidden');
-}
+function stopConfetti(){ if (confettiTimer){ cancelAnimationFrame(confettiTimer); confettiTimer=null; } confettiCanvas.classList.add('hidden'); }
 
-/* ========= boot ========= */
+/* ===== Boot ===== */
 onResize();
 requestAnimationFrame(render);
 fetchSeq();
 setInterval(fetchSeq, POLL_MS);
 
-document.addEventListener('fullscreenchange', () => {
-  if (document.fullscreenElement) document.body.classList.add('fs');
-  else document.body.classList.remove('fs');
-});
+document.addEventListener('fullscreenchange', () => { if (document.fullscreenElement) document.body.classList.add('fs'); else document.body.classList.remove('fs'); });
 </script>
 </body>
 </html>
