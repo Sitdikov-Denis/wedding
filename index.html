@@ -3,701 +3,429 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Колба голосов — Мальчик vs Девочка (премиум-оформление)</title>
+<title>Колба голосов — 3D (полировка)</title>
 <style>
   :root{
-    --bg:#efe2cf;
-    --wall:#f4eadc;
-    --panel:#f7efe4;
-    --text:#3a2a1f;
-    --muted:#9e8f7f;
-
-    /* золото */
-    --gold-1:#f7e9bb; /* свет */
-    --gold-2:#caa866; /* средний */
-    --gold-3:#a37a39; /* тень */
-
-    /* шары */
-    --pink:#ff7cab;
-    --blue:#64b2ff;
-
-    --show-seams: 0; /* 1 — тонкие вертикальные швы на стене */
+    --bg:#efe2cf; --bg2:#f5eadb; --gold:#c8a767; --blue:#5bb3ff; --pink:#ff7fb2;
+    --text:#3b2b1f; --muted:#8f7f6f;
   }
-
   *{box-sizing:border-box}
-  html,body{height:100%;margin:0}
-  body{
-    font-family: ui-rounded, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-    color:var(--text);
-    background:
-      radial-gradient(1200px 600px at 50% -10%, #f2e6d8 0%, #eadfcc 45%, #e6d7c3 70%, var(--bg) 100%);
-  }
+  html,body{height:100%;margin:0;background:radial-gradient(1200px 700px at 50% 0%, var(--bg2), var(--bg));font-family:system-ui,-apple-system,Segoe UI,Roboto;color:var(--text)}
+  .wrap{min-height:100%;display:grid;grid-template-rows:auto auto 1fr;gap:10px;padding:10px}
+  header{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap}
+  .pill{padding:8px 12px;border:1px solid #d9c9aa;border-radius:999px;background:#fff8ee;box-shadow:0 2px 8px #0000000d,inset 0 1px 0 #ffffff80;font-weight:800}
+  .pill .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:middle}
+  .pill.b .dot{background:var(--blue)} .pill.p .dot{background:var(--pink)}
 
-  /* верх - маленькие таблички */
-  .topbar{
-    display:flex; gap:10px; align-items:center; justify-content:center;
-    padding:10px 10px 0; flex-wrap:wrap;
-  }
-  .plaque{
-    position:relative; display:inline-flex; align-items:center; gap:10px;
-    padding:8px 14px; border-radius:14px;
-    background:linear-gradient(#fff8f0, #f3e7d4);
-    box-shadow:
-      inset 0 0 0 1px #e2d6c2,
-      inset 0 6px 14px rgba(255,255,255,.6),
-      0 3px 8px rgba(0,0,0,.06);
-    border:1px solid #d9c9ae;
-    font-weight:800; letter-spacing:.4px; font-size:13px;
-  }
-  .dot{ width:10px; height:10px; border-radius:50% }
-  .dot.blue{ background:var(--blue); box-shadow:0 0 10px #64b2ff80 }
-  .dot.pink{ background:var(--pink); box-shadow:0 0 10px #ff7cab80 }
+  .stage{display:grid;grid-template-columns:minmax(140px,16vw) 1fr minmax(140px,16vw);align-items:center;gap:14px}
+  .counter{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .label{padding:6px 12px;border:1px solid #d9c9aa;border-radius:14px;background:#fff8ee;font-weight:900;letter-spacing:.6px}
+  .value{font-size:clamp(48px,8vw,138px);line-height:1;font-weight:1000;text-shadow:0 6px 18px #00000022}
+  .canvasWrap{position:relative;min-height:64vh;border-radius:26px;background:radial-gradient(1400px 700px at 50% -10%,#ffffff,#ddd);box-shadow:0 18px 50px #00000025, inset 0 1px 0 #ffffffb0;border:1px solid #efe7d8;display:grid;place-items:center;overflow:hidden}
+  #three{width:100%;height:70vh;display:block}
 
-  /* сцена */
-  .stage{
-    max-width:1200px; margin:18px auto 24px;
-    padding:0 20px;
-  }
-  .grid{
-    display:grid;
-    grid-template-columns: minmax(180px, 22vw) 1fr minmax(180px, 22vw);
-    gap:24px; align-items:center;
-  }
-  .side{
-    display:flex; flex-direction:column; align-items:center; gap:8px;
-    user-select:none;
-  }
-  .side .tag{
-    padding:6px 12px; border-radius:12px; font-weight:900; letter-spacing:.6px;
-    background:linear-gradient(#fff8f0, #f3e7d4); border:1px solid #d9c9ae;
-    box-shadow: inset 0 0 0 1px #e2d6c2, 0 4px 14px rgba(0,0,0,.05);
-  }
-  .side .num{
-    font-weight:1000; font-size: clamp(72px, 9vw, 150px); line-height:1;
-    text-shadow: 0 10px 24px rgba(0,0,0,.08);
-  }
+  .controls{display:flex;justify-content:flex-end;gap:10px;padding:0 8px}
+  .btn{padding:10px 16px;border:1px solid #d9c9aa;border-radius:14px;background:#fff8ee;cursor:pointer;font-weight:900;box-shadow:0 6px 22px #0000001a,inset 0 1px 0 #ffffffb0}
+  .btn:active{transform:translateY(1px)}
+  .hidden{display:none !important}
 
-  /* рамки-кнопки справа сверху */
-  .actions{
-    position:fixed; right:18px; top:12px; display:flex; gap:10px; z-index:10;
-  }
-  .btn{
-    appearance:none; border:none; cursor:pointer;
-    padding:10px 18px; border-radius:14px;
-    color:var(--text); font-weight:900; letter-spacing:.5px;
-    background:linear-gradient(#fff8f0, #f3e7d4);
-    border:1px solid #d9c9ae;
-    box-shadow: inset 0 0 0 1px #e2d6c2, 0 4px 12px rgba(0,0,0,.06);
-    transition:transform .06s ease;
-  }
-  .btn:active{ transform: translateY(1px) }
-  .btn[disabled]{opacity:.6; cursor:default}
-
-  /* холст + рамка */
-  .canvasWrap{
-    position:relative; overflow:hidden; border-radius:28px;
-    background: radial-gradient(1300px 900px at 60% -10%, #ffffff, #d9d9d9);
-    box-shadow:
-      inset 0 0 1px rgba(255,255,255,.6),
-      inset 0 10px 40px rgba(255,255,255,.7),
-      inset 0 -30px 60px rgba(0,0,0,.06),
-      0 18px 40px rgba(0,0,0,.08);
-    padding:18px;
-  }
-  .canvasFrame{
-    border-radius:22px; overflow:hidden;
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.8),
-      inset 0 40px 120px rgba(255,255,255,.65),
-      inset 0 -60px 120px rgba(0,0,0,.08);
-  }
-  canvas#scene{ display:block; width:100%; height:70vh; background:
-    radial-gradient(1100px 700px at 50% 15%, #fdfdfd 0%, #e6e6e6 65%, #d1d1d1 100%);
-  }
-
-  /* победитель */
-  .overlay{
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    backdrop-filter: blur(2px); background: radial-gradient(900px 600px at 50% 40%, rgba(255,255,255,.12), rgba(0,0,0,.45));
-    opacity:0; pointer-events:none; transition:opacity .5s ease;
-  }
-  .overlay.show{ opacity:1 }
-  .winner{
-    text-align:center; padding:28px 36px; border-radius:20px;
-    background: rgba(255,255,255,.75);
-    box-shadow: 0 30px 80px rgba(0,0,0,.35), inset 0 0 0 1px #ffffffaa;
-  }
-  .winner h1{ margin:0 0 8px; font-size: clamp(28px, 5vw, 56px) }
-  .winner p { margin:0; color:var(--muted); font-weight:700 }
-
-  /* «швы» стены (по умолчанию выключены) */
-  .seam { display: none }
-  body[data-seams="1"] .seam { display:block }
-  .seam{
-    position:fixed; top:0; bottom:0; width:1px; left:50%;
-    transform:translateX(calc(-50vw + 64px)); /* слева от сцены */
-    background: linear-gradient(180deg, transparent, #cebca0 40%, #cebca0 60%, transparent);
-    opacity:.35; pointer-events:none;
-  }
-  .seam.right{
-    left:auto; right:50%; transform:translateX(calc(50vw - 64px));
-  }
-
-  @media (max-width: 980px){
-    .grid{ grid-template-columns: 1fr; }
-    .side{ order: 1 }
-    .canvasWrap{ order: 0 }
-    .actions{ right:12px; top:8px }
-    canvas#scene{ height:64vh }
-  }
+  .winner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(700px 400px at 50% 40%,#ffffff60,#0000);opacity:0;pointer-events:none;transition:opacity .5s ease}
+  .winner.show{opacity:1}
+  .card{padding:28px 34px;border-radius:22px;background:#fff8eecc;border:1px solid #e6d6b8;box-shadow:0 20px 80px #00000040;text-align:center}
+  .card h1{margin:0 0 6px;font-size:clamp(26px,4vw,48px)}
+  .card p{margin:0;color:var(--muted);font-size:clamp(16px,2vw,20px)}
 </style>
 </head>
-<body data-seams="0">
+<body>
+<div class="wrap">
 
-  <!-- маленькие таблички вверху -->
-  <div class="topbar" id="topbar">
-    <div class="plaque"><span class="dot blue"></span>Мальчик: <span id="cntBoySmall">0</span></div>
-    <div class="plaque"><span class="dot pink"></span>Девочка: <span id="cntGirlSmall">0</span></div>
-    <div class="plaque" id="scaleInfo">1 шарик = 1 голос</div>
-    <div class="plaque">Итого: <span id="cntTotal">0</span></div>
+  <header id="topbar">
+    <span class="pill b"><span class="dot"></span>Мальчик: <span id="cntBoySmall">0</span></span>
+    <span class="pill p"><span class="dot"></span>Девочка: <span id="cntGirlSmall">0</span></span>
+    <span class="pill">Итого: <span id="cntTotal">0</span></span>
+    <span class="pill" id="scaleInfo">1 шарик = 1 голос</span>
+  </header>
+
+  <div class="controls" id="ctrl">
+    <button class="btn" id="fsBtn">На весь экран</button>
+    <button class="btn" id="goBtn">Поехали</button>
   </div>
 
-  <!-- кнопки -->
-  <div class="actions">
-    <button class="btn" id="fsBtn">ПОЛНОЭКРАННЫЙ</button>
-    <button class="btn" id="goBtn">ПОЕХАЛИ</button>
-  </div>
+  <section class="stage">
+    <aside class="counter">
+      <div class="label">МАЛЬЧИК</div>
+      <div class="value" id="cntBoyBig">0</div>
+    </aside>
 
-  <div class="stage">
-    <div class="grid">
-      <aside class="side">
-        <div class="tag">МАЛЬЧИК</div>
-        <div class="num" id="cntBoyBig">0</div>
-      </aside>
-
-      <div class="canvasWrap" id="wrap">
-        <div class="canvasFrame">
-          <canvas id="scene"></canvas>
-        </div>
-        <!-- победитель -->
-        <div class="overlay" id="overlay">
-          <div class="winner">
-            <h1 id="winTitle">Победитель</h1>
-            <p id="winSub">Все голоса учтены</p>
-          </div>
+    <div class="canvasWrap">
+      <canvas id="three"></canvas>
+      <div class="winner" id="winner">
+        <div class="card">
+          <h1 id="winTitle">Победитель</h1>
+          <p id="winSub">Все голоса учтены</p>
         </div>
       </div>
-
-      <aside class="side">
-        <div class="tag">ДЕВОЧКА</div>
-        <div class="num" id="cntGirlBig">0</div>
-      </aside>
     </div>
-  </div>
 
-  <!-- факультативные «швы» стены -->
-  <div class="seam"></div><div class="seam right"></div>
+    <aside class="counter">
+      <div class="label">ДЕВОЧКА</div>
+      <div class="value" id="cntGirlBig">0</div>
+    </aside>
+  </section>
+</div>
 
+<!-- Three.js -->
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
 <script>
-/* ===== ВАША ТАБЛИЦА (CSV) ===== */
+/*** ===== НАСТРОЙКИ ДАННЫХ ===== ***/
 const SOURCE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScUpoDoG9BZOfEGgNdecule2fc6mVQBYVCMB5JjksJLZD2Pw48jb9G1wqWqmuuBM2XS2p3lxBm3Dj8/pub?gid=1307519951&single=true&output=csv";
-
-/* ===== настройки ===== */
 const POLL_MS = 2000;
-const FALL_DURATION = 1000;
-const START_SPACING_MS = 1000;
-const CAPACITY = 70;
 
-/* ===== ссылки на DOM ===== */
-const canvas = document.getElementById('scene');
-const ctx = canvas.getContext('2d');
-const overlay = document.getElementById('overlay');
-const winTitle= document.getElementById('winTitle');
-const winSub  = document.getElementById('winSub');
+const CAPACITY = 70;           // шариков визуально в банке
+const DROP_INTERVAL = 1000;    // шаг падения
+const BALL_R = 0.22;           // радиус
+const COLS = 10;
+const ROW_SPACING = 0.52, COL_SPACING = 0.48;
 
+/*** ===== UI ===== ***/
+const fsBtn = document.getElementById('fsBtn');
+const goBtn = document.getElementById('goBtn');
+const topbar = document.getElementById('topbar');
+const ctrl = document.getElementById('ctrl');
+const scaleInfo = document.getElementById('scaleInfo');
 const cntBoySmall = document.getElementById('cntBoySmall');
 const cntGirlSmall= document.getElementById('cntGirlSmall');
-const cntBoyBig   = document.getElementById('cntBoyBig');
-const cntGirlBig  = document.getElementById('cntGirlBig');
-const cntTotalEl  = document.getElementById('cntTotal');
-const scaleInfo   = document.getElementById('scaleInfo');
+const cntTotal = document.getElementById('cntTotal');
+const cntBoyBig = document.getElementById('cntBoyBig');
+const cntGirlBig= document.getElementById('cntGirlBig');
+const winnerEl = document.getElementById('winner');
+const winTitle = document.getElementById('winTitle');
+const winSub   = document.getElementById('winSub');
 
-const goBtn = document.getElementById('goBtn');
-const fsBtn = document.getElementById('fsBtn');
-
-/* ===== состояние ===== */
-let jar = {x:0,y:0,w:0,h:0, neckW:0, neckH:0, wall:0};
-let serverSeq=[], animatedN=0, balls=[], score={boy:0, girl:0};
 let started=false, finishShownFor=-1;
 
-/* ===== утилиты ===== */
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const lerp =(a,b,t)=>a+(b-a)*t;
-const easeOut = t => 1 - Math.pow(1-t,3);
-function pluralRu(n, forms){ const n10=n%10, n100=n%100; if(n10===1&&n100!==11)return forms[0]; if(n10>=2&&n10<=4&&(n100<10||n100>=20))return forms[1]; return forms[2]; }
-function normalizeChoice(v){
-  const s = (v||"").toLowerCase();
-  if (s.includes("маль")||s.includes("boy") || s.includes("голуб")) return "boy";
-  if (s.includes("дев") ||s.includes("girl")|| s.includes("розов")) return "girl";
-  return "";
-}
+/*** ===== THREE.js СЦЕНА ===== ***/
+const canvas = document.getElementById('three');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+renderer.setPixelRatio(Math.min(2, window.devicePixelRatio||1));
+renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-/* ===== размеры ===== */
-function onResize(){
-  const dpr = Math.min(2, window.devicePixelRatio||1);
-  const rect = canvas.parentElement.getBoundingClientRect();
-  canvas.width = Math.floor(rect.width * dpr);
-  canvas.height= Math.floor(rect.height* dpr);
-  ctx.setTransform(dpr,0,0,dpr,0,0);
+const scene = new THREE.Scene();
+scene.background = null;
 
-  // банка — пропорции ближе к референсу
-  const margin = 40;
-  const areaW = rect.width - margin*2;
-  const areaH = rect.height - margin*2;
-  const jarW = areaW*0.32;
-  const jarH = areaH*0.70;
+const camera = new THREE.PerspectiveCamera(28, 2, 0.1, 100);
+camera.position.set(0, 2.6, 10);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.enablePan = false; controls.minDistance = 6; controls.maxDistance = 12; controls.target.set(0,1.6,0);
 
-  jar.w = jarW; jar.h = jarH;
-  jar.x = rect.width/2;
-  jar.y = rect.height*0.85;
-  jar.neckW = clamp(jarW*0.46, 160, 260);
-  jar.neckH = clamp(jarH*0.12,  70, 110);
-  jar.wall  = clamp(jarW*0.04,  10,  22);
-}
-addEventListener('resize', onResize);
+/* HDRI окружение (лёгкое): рисуем тёплую градиентную карту на canvas → PMREM */
+function makeWarmEquirect(size=512){
+  const c = document.createElement('canvas'); c.width=size; c.height=size/2;
+  const ctx = c.getContext('2d');
+  const g = ctx.createLinearGradient(0,0,0,c.height);
+  g.addColorStop(0,'#fff6e8');
+  g.addColorStop(.35,'#f4e6cf');
+  g.addColorStop(1,'#e8dbc6');
+  ctx.fillStyle=g; ctx.fillRect(0,0,c.width,c.height);
 
-/* ===== внутренняя прямоугольная область (куда кладём шарики) ===== */
-function jarInnerRect(){
-  const {x,y,w,h,neckW,neckH,wall}=jar;
-  const r = Math.min(100, w*0.22);
-  return {
-    left:   x-w/2 + wall*1.3 + r*0.05,
-    right:  x+w/2 - wall*1.3 - r*0.05,
-    top:    y-h + neckH + wall*1.1 + r*0.06,
-    bottom: y - wall*1.0 - r*0.35
-  };
-}
-
-/* ===== аккуратный путь банки ===== */
-function pathJarOuter(){
-  const {x,y,w,h,neckW,neckH,wall}=jar;
-  const r = Math.min(100, w*0.22);
-
-  const left   = x - w/2;
-  const right  = x + w/2;
-  const top    = y - h;
-  const bottom = y;
-
-  ctx.beginPath();
-
-  // горлышко (вертикальная шейка)
-  ctx.moveTo(x - neckW/2, top + neckH);
-  // левый верхний угол шейки
-  ctx.lineTo(x - neckW/2, top + neckH*0.35);
-
-  // левый плавный изгиб в «плечо»
-  ctx.quadraticCurveTo(
-    left + wall*0.8,          top + neckH*0.35,
-    left + wall*0.8,          top + neckH + r*0.45
-  );
-
-  // левая боковая дуга
-  ctx.bezierCurveTo(
-    left + wall*0.2,  top + neckH + h*0.22,
-    left + wall*0.2,  bottom - h*0.22,
-    left + wall*0.8,  bottom - r*0.35
-  );
-
-  // дно — почти прямая с небольшим радиусом
-  ctx.quadraticCurveTo(
-    x,                  bottom,
-    right - wall*0.8,   bottom - r*0.35
-  );
-
-  // правая боковая дуга вверх
-  ctx.bezierCurveTo(
-    right - wall*0.2, top + neckH + h*0.78,
-    right - wall*0.2, top + neckH + h*0.22,
-    right - wall*0.8, top + neckH + r*0.45
-  );
-
-  // правое плечо в шейку
-  ctx.quadraticCurveTo(
-    right - wall*0.8,      top + neckH*0.35,
-    x + neckW/2,           top + neckH*0.35
-  );
-  ctx.lineTo(x + neckW/2, top + neckH);
-
-  // верхнее «кольцо» мы рисуем отдельно
-  ctx.closePath();
-}
-
-/* ===== мраморный пьедестал ===== */
-function drawPlinth(){
-  const {x,y,w}=jar;
-  const aw = w*1.2, ah = w*0.20; // верхняя тарелка
-  const bw = w*1.4, bh = w*0.26; // нижняя тень
-
-  // нижняя мягкая тень
-  const g = ctx.createRadialGradient(x, y+6, 2, x, y+6, bw/2);
-  g.addColorStop(0, "rgba(0,0,0,.18)");
-  g.addColorStop(1, "rgba(0,0,0,0)");
-  ctx.fillStyle = g;
-  ctx.beginPath();
-  ctx.ellipse(x, y+6, bw/2, bh/2, 0, 0, Math.PI*2);
-  ctx.fill();
-
-  // верхний белый диск (псевдо-мрамор)
-  const g2 = ctx.createRadialGradient(x, y, 2, x, y, aw/2);
-  g2.addColorStop(0, "#fffdfa");
-  g2.addColorStop(1, "#efe5d6");
-  ctx.fillStyle = g2;
-  ctx.strokeStyle = "#d9c9ae";
-  ctx.lineWidth = 1.2;
-  ctx.beginPath();
-  ctx.ellipse(x, y-2, aw/2, ah/2, 0, 0, Math.PI*2);
-  ctx.fill(); ctx.stroke();
-}
-
-/* ===== блестящее «золотое» кольцо горлышка ===== */
-function drawNeckRing(){
-  const {x,y,w,h,neckW,neckH}=jar;
-  const top = y - h;
-
-  const outerR = neckW/2;
-  const innerR = neckW/2 - Math.max(10, w*0.04);
-
-  // обод с градиентом
-  const g = ctx.createLinearGradient(0, top, 0, top + neckH*0.8);
-  g.addColorStop(0,  "#fff6d9");
-  g.addColorStop(0.45,"#f7e9bb");
-  g.addColorStop(0.6, "#caa866");
-  g.addColorStop(1,  "#a37a39");
-
-  ctx.save();
-  ctx.translate(x, top + neckH*0.3);
-  ctx.scale(1, 0.55);
-
-  ctx.beginPath();
-  ctx.ellipse(0,0, outerR, outerR*0.45, 0, 0, Math.PI*2);
-  ctx.fillStyle = g; ctx.fill();
-
-  // внутреннее отверстие
-  ctx.globalCompositeOperation = "destination-out";
-  ctx.beginPath();
-  ctx.ellipse(0,0, innerR, innerR*0.45, 0, 0, Math.PI*2);
-  ctx.fill();
-
-  // внутренний серый «просвет»
-  ctx.globalCompositeOperation = "source-over";
-  ctx.beginPath();
-  ctx.ellipse(0,0, innerR, innerR*0.45, 0, 0, Math.PI*2);
-  const g2 = ctx.createLinearGradient(0,-innerR*0.45,0,innerR*0.45);
-  g2.addColorStop(0,"#e6e6e6");
-  g2.addColorStop(1,"#cccccc");
-  ctx.fillStyle=g2; ctx.globalAlpha=.7; ctx.fill();
-  ctx.restore();
-}
-
-/* ===== рисуем банку (стекло) ===== */
-function drawJar(){
-  drawPlinth();
-
-  const inner = jarInnerRect();
-
-  // задний «столб света»
-  ctx.save();
-  ctx.globalAlpha=.9;
-  const gBack = ctx.createLinearGradient(0, inner.top, 0, inner.bottom);
-  gBack.addColorStop(0, "#ffffffaa");
-  gBack.addColorStop(0.5, "#ffffff66");
-  gBack.addColorStop(1, "#ffffff10");
-  ctx.fillStyle=gBack;
-  ctx.fillRect(inner.left+10, inner.top, (inner.right-inner.left)-20, inner.bottom-inner.top);
-  ctx.restore();
-
-  // контур банки золотом
-  pathJarOuter();
-  const gold = ctx.createLinearGradient(0, inner.top, 0, inner.bottom);
-  gold.addColorStop(0,  "#f7e9bb");
-  gold.addColorStop(0.35,"#e9d29a");
-  gold.addColorStop(0.65,"#caa866");
-  gold.addColorStop(1,  "#a37a39");
-  ctx.lineWidth = Math.max(8, jar.wall);
-  ctx.strokeStyle = gold;
-  ctx.stroke();
-
-  // стекло — блики
-  pathJarOuter();
-  ctx.save();
-  ctx.clip();
-
-  // мягкий центральный блик
-  const cx = jar.x + (inner.right-inner.left)*0.10;
-  const cy = (inner.top+inner.bottom)/2;
-  const rg = ctx.createRadialGradient(cx, cy, 10, cx, cy, (inner.right-inner.left));
-  rg.addColorStop(0, "#ffffff85");
-  rg.addColorStop(1, "#ffffff00");
-  ctx.fillStyle = rg;
-  ctx.fillRect(inner.left-30, inner.top-50, (inner.right-inner.left)+60, (inner.bottom-inner.top)+100);
-
-  // правое вертикальное отражение
-  const gR = ctx.createLinearGradient(inner.right-24, inner.top, inner.right+12, inner.top);
-  gR.addColorStop(0, "#ffffffaa");
-  gR.addColorStop(1, "#ffffff00");
-  ctx.fillStyle=gR;
-  ctx.fillRect(inner.right-24, inner.top, 36, inner.bottom-inner.top);
-
-  // левое мягкое отражение
-  const gL = ctx.createLinearGradient(inner.left-18, inner.top, inner.left+20, inner.top);
-  gL.addColorStop(0, "#ffffff00");
-  gL.addColorStop(1, "#ffffff66");
-  ctx.fillStyle=gL;
-  ctx.fillRect(inner.left-18, inner.top, 38, inner.bottom-inner.top);
-
-  ctx.restore();
-
-  // верхнее кольцо
-  drawNeckRing();
-}
-
-/* ===== раскладка мест для шаров ===== */
-function layoutPositions(total){
-  const inner = jarInnerRect();
-  const width = inner.right - inner.left;
-  const height= inner.bottom - inner.top;
-
-  const need = Math.min(total, CAPACITY);
-  const targetFill = 0.88;
-
-  let r = Math.max(10, Math.floor(width / 18));
-  let step = r*2 + 5;
-  let cols = Math.max(1, Math.floor(width / step));
-  let rows = Math.ceil(need / cols);
-  const maxH = height * targetFill;
-
-  if (rows * step > maxH){
-    r = Math.floor((maxH / rows - 5)/2);
-    r = Math.max(8, r);
-    step = r*2 + 5;
-    cols = Math.max(1, Math.floor(width/step));
-    rows = Math.ceil(need / cols);
+  // мягкие «световые круги»
+  for(let i=0;i<3;i++){
+    const cx = (0.25 + i*0.3) * c.width,
+          cy = (0.35 + (i%2)*0.2) * c.height,
+          r  = c.height*0.6;
+    const rg = ctx.createRadialGradient(cx,cy,1,cx,cy,r);
+    rg.addColorStop(0, 'rgba(255,255,255,0.55)');
+    rg.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
   }
-
-  const pos=[];
-  let row=0, col=0;
-  for(let i=0;i<need;i++){
-    const px = inner.left + (col+0.5)*step;
-    const py = inner.bottom - (row+0.5)*step;
-    pos.push({x:px,y:py,r});
-    col++; if(col>=cols){col=0; row++; }
-  }
-  return pos;
+  const tex = new THREE.CanvasTexture(c);
+  tex.mapping = THREE.EquirectangularReflectionMapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
 }
+const pmrem = new THREE.PMREMGenerator(renderer);
+const envRT = pmrem.fromEquirectangular(makeWarmEquirect());
+scene.environment = envRT.texture;
 
-/* ===== шарики ===== */
-function animateNewBalls(slice){
-  if (!slice.length) return;
+/* Свет */
+const hemi = new THREE.HemisphereLight(0xffffff, 0xf0e0cc, 0.55);
+scene.add(hemi);
+const dir = new THREE.DirectionalLight(0xffffff, 0.9);
+dir.position.set(4,6,6);
+dir.castShadow = true;
+dir.shadow.mapSize.set(1024,1024);
+dir.shadow.radius = 4;
+dir.shadow.camera.near = 1; dir.shadow.camera.far = 20;
+dir.shadow.camera.left = -6; dir.shadow.camera.right = 6;
+dir.shadow.camera.top = 6; dir.shadow.camera.bottom = -3;
+scene.add(dir);
+scene.add(new THREE.AmbientLight(0xffffff, 0.18));
 
-  const spacing = START_SPACING_MS, fallDur = FALL_DURATION;
-  const totalAfter = animatedN + slice.length;
-  const positions = layoutPositions(totalAfter);
-
-  for (let i=0;i<slice.length;i++){
-    const idx   = animatedN + i;
-    const color = slice[i];
-    const p = positions[Math.min(positions.length-1, idx)];
-    const inner = jarInnerRect();
-
-    // старт над горлышком
-    const sx = (jar.x - jar.neckW/2) + Math.random()*jar.neckW;
-    const sy = inner.top - (80 + Math.random()*120);
-
-    balls.push({
-      color,
-      x:sx, y:sy, tx:p.x, ty:p.y, r:p.r,
-      t0: performance.now() + i*spacing, dur: fallDur, landed:false
-    });
-  }
-  animatedN = Math.min(totalAfter, CAPACITY);
-}
-
-function drawBall(b){
-  const col = b.color==='girl' ? getComputedStyle(document.documentElement).getPropertyValue('--pink')
-                               : getComputedStyle(document.documentElement).getPropertyValue('--blue');
-
-  // тенёк
-  ctx.save();
-  const shadowY = b.y + b.r*0.85;
-  const sg = ctx.createRadialGradient(b.x, shadowY, 2, b.x, shadowY, b.r*1.2);
-  sg.addColorStop(0, "rgba(0,0,0,.18)");
-  sg.addColorStop(1, "rgba(0,0,0,0)");
-  ctx.fillStyle = sg;
-  ctx.beginPath();
-  ctx.ellipse(b.x, shadowY, b.r*1.2, b.r*0.6, 0, 0, Math.PI*2);
-  ctx.fill();
-  ctx.restore();
-
-  // сам шар (основной)
-  ctx.save();
-  const g = ctx.createRadialGradient(b.x - b.r*0.35, b.y - b.r*0.35, 2, b.x, b.y, b.r);
-  g.addColorStop(0, "#ffffff");
-  g.addColorStop(0.18, "#ffffff");
-  g.addColorStop(0.22, col.trim());
-  g.addColorStop(1, col.trim());
-  ctx.fillStyle = g;
-  ctx.beginPath();
-  ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
-  ctx.fill();
-
-  // белый блик
-  ctx.globalAlpha=.9;
-  ctx.beginPath();
-  ctx.arc(b.x - b.r*0.35, b.y - b.r*0.38, b.r*0.35, 0, Math.PI*2);
-  ctx.fillStyle="#ffffff";
-  ctx.fill();
-  ctx.restore();
-}
-
-/* ===== основной рендер ===== */
-function render(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  drawJar();
-
-  const now = performance.now();
-  const inner = jarInnerRect();
-
-  // слой шаров под клипом банки
-  ctx.save();
-  ctx.beginPath();
-  ctx.rect(inner.left, inner.top, inner.right-inner.left, inner.bottom-inner.top);
-  ctx.clip();
-
-  for (const b of balls){
-    const t = clamp((now - b.t0)/b.dur, 0, 1);
-    const k = easeOut(t);
-
-    b.drawX = lerp(b.x,  b.tx, k);
-    b.drawY = lerp(b.y,  b.ty, k);
-    drawBall({ ...b, x:b.drawX, y:b.drawY });
-
-    if (t>=1 && !b.landed){
-      b.landed = true;
-      if (b.color==='boy') score.boy++; else score.girl++;
-      updateScoreUI(); checkFinish();
+/* Процедурный «мрамор» */
+function marbleTexture(w=1024,h=512){
+  const c = document.createElement('canvas'); c.width=w; c.height=h;
+  const ctx = c.getContext('2d');
+  // базовый цвет
+  const bg = ctx.createLinearGradient(0,0,0,h);
+  bg.addColorStop(0,'#f4ede5'); bg.addColorStop(1,'#efe7dd');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,w,h);
+  // полупрозрачные прожилки
+  ctx.globalAlpha = 0.13; ctx.strokeStyle='#cfc5bb'; ctx.lineWidth=2.2;
+  for(let i=0;i<60;i++){
+    let x = Math.random()*w, y = Math.random()*h;
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+    for(let k=0;k<6;k++){
+      x += (Math.random()*120-60); y += (Math.random()*60-30);
+      ctx.lineTo(x,y);
     }
+    ctx.stroke();
   }
-  ctx.restore();
-
-  requestAnimationFrame(render);
+  // лёгкие пятна
+  for(let i=0;i<12;i++){
+    const gx = Math.random()*w, gy = Math.random()*h, r = 40+Math.random()*120;
+    const g = ctx.createRadialGradient(gx,gy,1,gx,gy,r);
+    g.addColorStop(0,'rgba(200,190,180,0.18)');
+    g.addColorStop(1,'rgba(200,190,180,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(gx,gy,r,0,Math.PI*2); ctx.fill();
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(1,1);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
 }
 
-/* ===== UI ===== */
-function updateScoreUI(){
-  cntBoySmall.textContent = score.boy;
-  cntGirlSmall.textContent= score.girl;
-  cntBoyBig.textContent   = score.boy;
-  cntGirlBig.textContent  = score.girl;
-  cntTotalEl.textContent  = score.boy + score.girl;
+/* Пьедестал */
+const pedestal = new THREE.Group();
+function addDisk(r,h,y,rough=0.6){
+  const geo = new THREE.CylinderGeometry(r,r,h,96,1,true);
+  const mat = new THREE.MeshStandardMaterial({
+    map: marbleTexture(1024,512), roughness: rough, metalness: 0.0
+  });
+  const m = new THREE.Mesh(geo, mat); m.position.y=y; m.receiveShadow = true; m.castShadow=false;
+  pedestal.add(m);
+}
+// тени-подложки (мягкий эллипс)
+function addShadowEllipse(r, y, alpha){
+  const g = new THREE.CircleGeometry(r, 64);
+  const m = new THREE.MeshBasicMaterial({transparent:true, opacity:alpha, color:0x000000});
+  const disk = new THREE.Mesh(g, m);
+  disk.rotation.x = -Math.PI/2; disk.position.y = y;
+  disk.material.onBeforeCompile = (shader)=>{
+    shader.fragmentShader = shader.fragmentShader.replace(
+      `#include <common>`,
+      `#include <common>
+       float softEdge(vec2 uv){ vec2 c = uv*2.0-1.0; float d = length(c); return smoothstep(1.0, 0.7, d); }`
+    ).replace(
+      `gl_FragColor = vec4( diffuse, opacity );`,
+      `gl_FragColor = vec4(vec3(0.0), opacity*softEdge(gl_PointCoord));`
+    );
+  };
+  pedestal.add(disk);
+}
+addDisk(3.2,0.18,0.09,0.65);
+addDisk(2.9,0.18,0.27,0.62);
+addDisk(2.5,0.24,0.48,0.58);
+addShadowEllipse(3.2,0.05,0.15);
+scene.add(pedestal);
 
+/* Банка (стекло) — сглаженный профиль + «золотой» кант */
+function makeJar(){
+  const pts = [];
+  pts.push(new THREE.Vector2(1.10, 0.52));
+  pts.push(new THREE.Vector2(1.07, 0.72));
+  pts.push(new THREE.Vector2(0.98, 1.55));
+  pts.push(new THREE.Vector2(0.88, 2.18));
+  pts.push(new THREE.Vector2(0.82, 2.52));
+  const lathe = new THREE.LatheGeometry(pts, 120);
+  const glass = new THREE.MeshPhysicalMaterial({
+    color: 0xffffff, roughness: 0.05, metalness: 0.0,
+    transmission: 0.98, thickness: 0.26, ior: 1.46, clearcoat: 1, clearcoatRoughness: 0.05,
+    envMapIntensity: 1.0
+  });
+  const jar = new THREE.Mesh(lathe, glass); jar.castShadow=false; jar.receiveShadow=false;
+
+  const ringGeo = new THREE.TorusGeometry(0.83, 0.06, 32, 100);
+  const ringMat = new THREE.MeshStandardMaterial({color:0xc7a66a, metalness:1.0, roughness:0.24, envMapIntensity:1.0});
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.rotation.x = Math.PI/2; ring.position.y = 2.60; ring.castShadow=true;
+
+  const neckGeo = new THREE.CylinderGeometry(0.76,0.76,0.10,64,1,true);
+  const neck = new THREE.Mesh(neckGeo, glass.clone());
+  neck.position.y = 2.55;
+
+  const g = new THREE.Group();
+  g.add(jar, ring, neck);
+  return g;
+}
+const jar = makeJar();
+scene.add(jar);
+
+/* Клиппинг-область укладки шаров */
+const clipRadius = 0.82;
+const clipTopY  = 2.25;
+
+/* Группа шаров */
+const ballsGroup = new THREE.Group(); scene.add(ballsGroup);
+
+/* Материалы шаров */
+const matBoy  = new THREE.MeshPhysicalMaterial({color:0x57a9ff, roughness:0.28, metalness:0.0, clearcoat:1, clearcoatRoughness:0.18, envMapIntensity:1.0});
+const matGirl = new THREE.MeshPhysicalMaterial({color:0xff6fae, roughness:0.28, metalness:0.0, clearcoat:1, clearcoatRoughness:0.18, envMapIntensity:1.0});
+const ballGeo = new THREE.SphereGeometry(BALL_R, 48, 32);
+
+/* сетка позиций (как «аккуратная укладка») */
+function targetPositionForIndex(idx){
+  const row = Math.floor(idx / COLS);
+  const col = idx % COLS;
+  const x = (col - (COLS-1)/2) * COL_SPACING * 0.9;
+  const y = 0.52 + BALL_R + row * ROW_SPACING;
+  const z = 0;
+  return {x,y,z};
+}
+
+/* падение шарика с лёгким «пружинящим» easing */
+function spawnBall(color, idx){
+  const mesh = new THREE.Mesh(ballGeo, color==='boy'?matBoy:matGirl);
+  const t = targetPositionForIndex(idx);
+  mesh.position.set( (Math.random()-0.5)*0.4, clipTopY + 0.5 + Math.random()*0.5, (Math.random()-0.5)*0.4 );
+  mesh.castShadow = true; mesh.receiveShadow=false;
+  ballsGroup.add(mesh);
+
+  const start = performance.now(), dur = 900;
+  function step(){
+    const k = Math.min(1, (performance.now()-start)/dur);
+    const e = k<1 ? 1 - Math.pow(1-k, 3) : 1; // easeOutCubic
+    mesh.position.x = THREE.MathUtils.lerp(mesh.position.x, t.x, e);
+    mesh.position.y = THREE.MathUtils.lerp(mesh.position.y, t.y, e);
+    mesh.position.z = THREE.MathUtils.lerp(mesh.position.z, t.z, e);
+    if (k<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/*** ===== ДАННЫЕ / СЧЁТ ===== ***/
+let serverSeq = [];      // ['boy','girl',...]
+let animatedN = 0;       // сколько визуально уронили
+let score = {boy:0, girl:0};
+
+function updateScoreUI(){
+  cntBoySmall.textContent = score.boy; cntBoyBig.textContent = score.boy;
+  cntGirlSmall.textContent= score.girl; cntGirlBig.textContent= score.girl;
+  cntTotal.textContent = score.boy + score.girl;
   const scale = Math.max(1, Math.ceil((serverSeq.length||1)/CAPACITY));
   scaleInfo.textContent = `1 шарик = ${scale} голос${pluralRu(scale,['','а','ов'])}`;
 }
-function showWinner(title, sub){
-  winTitle.textContent = title; winSub.textContent = sub;
-  overlay.classList.add('show');
-}
-function hideWinner(){ overlay.classList.remove('show'); }
+function pluralRu(n, forms){ const n10=n%10,n100=n%100; if(n10===1&&n100!==11)return forms[0]; if(n10>=2&&n10<=4&&(n100<10||n100>=20))return forms[1]; return forms[2]; }
 
-/* ===== CSV ===== */
+function normalizeChoice(v){
+  const s = (v||"").toLowerCase();
+  if (s.includes("маль")||s.includes("boy")||s.includes("голуб")) return "boy";
+  if (s.includes("дев") ||s.includes("girl")||s.includes("розов")) return "girl";
+  return "";
+}
 function parseCsv(text){
-  const rows=[]; let row=[], cur="", inQ=false;
-  for (let i=0;i<text.length;i++){
+  const rows=[]; let row=[],cur="",inQ=false;
+  for(let i=0;i<text.length;i++){
     const c=text[i], n=text[i+1];
-    if (c=='"'){ if(inQ&&n=='"'){cur+='"'; i++;} else inQ=!inQ; }
-    else if (c==','&&!inQ){ row.push(cur); cur=""; }
-    else if ((c=='\n'||c=='\r')&&!inQ){ if(cur!==""||row.length){row.push(cur); rows.push(row); row=[]; cur="";} }
+    if(c=='"'){ if(inQ && n=='"'){cur+='"'; i++;} else inQ=!inQ; }
+    else if(c==',' && !inQ){row.push(cur); cur="";}
+    else if((c=='\n'||c=='\r') && !inQ){ if(cur!==""||row.length){row.push(cur); rows.push(row); row=[]; cur="";} }
     else cur+=c;
   }
-  if (cur!==""||row.length){ row.push(cur); rows.push(row); }
+  if(cur!==""||row.length){row.push(cur); rows.push(row);}
   return rows;
 }
+
 async function fetchSeq(){
-  try{
-    const url = SOURCE_URL + (SOURCE_URL.includes('?')?'&':'?') + 'nocache=' + Date.now();
-    const res = await fetch(url,{cache:'no-store'}); if(!res.ok) return;
-    const text = await res.text();
-    const rows = parseCsv(text).filter(r=>r.length>=2);
-    const seq = [];
-    for (let i=1;i<rows.length;i++){
-      const v = (rows[i][1]||"").toString().trim();
-      const n = normalizeChoice(v); if(n) seq.push(n);
-    }
-    serverSeq = seq;
-    const scale = Math.max(1, Math.ceil((serverSeq.length||1)/CAPACITY));
-    scaleInfo.textContent = `1 шарик = ${scale} голос${pluralRu(scale,['','а','ов'])}`;
-    if (finishShownFor>=0 && (score.boy+score.girl) < serverSeq.length) hideWinner();
-  }catch(e){}
+  const url = SOURCE_URL + (SOURCE_URL.includes('?')?'&':'?') + 'nocache=' + Date.now();
+  const res = await fetch(url, {cache:'no-store'}).catch(()=>null);
+  if(!res||!res.ok) return;
+  const text = await res.text();
+  const rows = parseCsv(text).filter(r=>r.length>=2);
+  const seq = [];
+  for(let i=1;i<rows.length;i++){
+    const norm = normalizeChoice((rows[i][1]||"").trim());
+    if(norm) seq.push(norm);
+  }
+  serverSeq = seq;
+  const scale = Math.max(1, Math.ceil((serverSeq.length||1)/CAPACITY));
+  scaleInfo.textContent = `1 шарик = ${scale} голос${pluralRu(scale,['','а','ов'])}`;
+  if (finishShownFor>=0 && (score.boy+score.girl)<serverSeq.length) hideWinner();
 }
 
-/* ===== финал ===== */
-function checkFinish(){
-  if (!started) return;
-  const totalNow = score.boy + score.girl;
-  if (serverSeq.length===0 || totalNow < serverSeq.length) return;
-  if (finishShownFor === serverSeq.length) return;
+function animateNew(fromIdx){
+  const batch = serverSeq.slice(fromIdx, Math.min(serverSeq.length, CAPACITY));
+  batch.forEach((c, i)=>{
+    setTimeout(()=>{
+      spawnBall(c, fromIdx+i);
+      if (c==='boy') score.boy++; else score.girl++;
+      updateScoreUI(); checkFinish();
+    }, i*DROP_INTERVAL);
+  });
+  animatedN = Math.min(serverSeq.length, CAPACITY);
 
-  const boy=score.boy, girl=score.girl;
-  if (boy>girl) showWinner('Победил МАЛЬЧИК!','Поздравляем родителей!');
-  else if (girl>boy) showWinner('Победила ДЕВОЧКА!','Поздравляем родителей!');
-  else showWinner('Ничья!','Вы потрясающая команда ♥');
+  const extra = serverSeq.slice(CAPACITY);
+  extra.forEach((c, j)=>{
+    setTimeout(()=>{
+      if (c==='boy') score.boy++; else score.girl++;
+      updateScoreUI(); checkFinish();
+    }, (batch.length + j)*DROP_INTERVAL);
+  });
+}
+
+function checkFinish(){
+  if(!started) return;
+  const totalNow = score.boy + score.girl;
+  if(totalNow < serverSeq.length) return;
+  if(finishShownFor === serverSeq.length) return;
+
+  if(score.boy>score.girl){ showWinner('Победил МАЛЬЧИК!', 'Поздравляем родителей!'); }
+  else if(score.girl>score.boy){ showWinner('Победила ДЕВОЧКА!', 'Поздравляем родителей!'); }
+  else { showWinner('Ничья!', 'Вы — идеальная команда ♥'); }
   finishShownFor = serverSeq.length;
 }
+function showWinner(title, sub){ winTitle.textContent=title; winSub.textContent=sub; winnerEl.classList.add('show'); }
+function hideWinner(){ winnerEl.classList.remove('show'); }
 
-/* ===== запуск ===== */
-onResize();
-requestAnimationFrame(render);
-fetchSeq();
-setInterval(fetchSeq, POLL_MS);
-
-goBtn.addEventListener('click', async ()=>{
-  if (started) return;
+/*** ===== СТАРТ / ФУЛЛСКРИН ===== ***/
+fsBtn.onclick = async()=>{
+  try{ await document.documentElement.requestFullscreen(); }catch(e){}
+  fsBtn.classList.add('hidden');
+};
+goBtn.onclick = async()=>{
+  if(started) return;
   started = true;
-  overlay.classList.remove('show');
-  balls=[]; score={boy:0,girl:0}; animatedN=0; finishShownFor=-1; updateScoreUI();
+  topbar.classList.add('hidden'); ctrl.classList.add('hidden');
+  try{ if(!document.fullscreenElement) await document.documentElement.requestFullscreen(); }catch(e){}
+  while(ballsGroup.children.length) ballsGroup.remove(ballsGroup.children[0]);
+  score={boy:0,girl:0}; animatedN=0; finishShownFor=-1; hideWinner(); updateScoreUI();
+  animateNew(0);
+};
 
-  // полноэкранный по желанию (кнопкой отдельной)
-  if (document.fullscreenElement) document.body.classList.add('fs');
-
-  if (serverSeq.length){
-    const first = serverSeq.slice(0, CAPACITY);
-    animateNewBalls(first);
-    if (serverSeq.length > CAPACITY){
-      let extra = serverSeq.length - CAPACITY;
-      for (let i=0;i<extra;i++){
-        const color = serverSeq[CAPACITY+i];
-        setTimeout(()=>{ if(color==='boy')score.boy++; else score.girl++; updateScoreUI(); checkFinish(); }, (animatedN+i)*START_SPACING_MS + FALL_DURATION);
-      }
-    }
+/*** ===== РЕСАЙЗ/РЕНДЕР ===== ***/
+function resizeRendererToDisplaySize(){
+  const c = renderer.domElement;
+  const width = c.clientWidth, height = c.clientHeight;
+  if(c.width !== width || c.height !== height){
+    renderer.setSize(width, height, false);
+    camera.aspect = width/height; camera.updateProjectionMatrix();
   }
-});
+}
+function render(){
+  resizeRendererToDisplaySize();
+  controls.update();
+  renderer.render(scene, camera);
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+window.addEventListener('resize', ()=>resizeRendererToDisplaySize());
 
-fsBtn.addEventListener('click', async ()=>{
-  try{
-    if(!document.fullscreenElement){
-      await document.documentElement.requestFullscreen();
-      fsBtn.style.display='none'; // спрятать как просили
-    } else {
-      await document.exitFullscreen();
-    }
-  }catch(e){}
-});
-
-document.addEventListener('fullscreenchange', ()=>{
-  if (document.fullscreenElement) document.body.classList.add('fs');
-  else { document.body.classList.remove('fs'); fsBtn.style.display=''; }
-});
+/*** ===== ПУЛЛИНГ ДАННЫХ ===== ***/
+fetchSeq(); setInterval(fetchSeq, POLL_MS);
 </script>
 </body>
 </html>
