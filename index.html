@@ -1,773 +1,703 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Колба голосов — премиум-оформление</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Колба голосов — Мальчик vs Девочка (премиум-оформление)</title>
+<style>
+  :root{
+    --bg:#efe2cf;
+    --wall:#f4eadc;
+    --panel:#f7efe4;
+    --text:#3a2a1f;
+    --muted:#9e8f7f;
 
-  <!--
-    ДИЗАЙН:
-    - Тёплый «бумажный» фон с панельными линиями
-    - Стеклянная банка с золотым ободом и бликами
-    - Мраморная подставка, мягкие тени
-    - Глянцевые шарики (розовые/голубые) с бликами и падающей тенью
-    - Рамочные таблички и кнопки в классическом стиле
-    - Боковые счётчики (большие), верхние мини-счётчики и масштаб «1 шарик = N голосов»
-    - Финальный баннер и конфетти
-  -->
+    /* золото */
+    --gold-1:#f7e9bb; /* свет */
+    --gold-2:#caa866; /* средний */
+    --gold-3:#a37a39; /* тень */
 
-  <style>
-    :root{
-      /* ПАЛИТРА */
-      --bg:#efe2cf;         /* общий фон */
-      --bg2:#f7ecdb;        /* градиент к низу */
-      --panel:#d9c8a7;      /* линии панелей на стене */
+    /* шары */
+    --pink:#ff7cab;
+    --blue:#64b2ff;
 
-      /* золото (обод, рамки) */
-      --gold-1:#fff3cd;
-      --gold-2:#e8c98d;
-      --gold-3:#caa668;
-      --gold-4:#8c6c3a;
+    --show-seams: 0; /* 1 — тонкие вертикальные швы на стене */
+  }
 
-      /* текст */
-      --text:#433222;
-      --muted:#8e7c66;
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    font-family: ui-rounded, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    color:var(--text);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #f2e6d8 0%, #eadfcc 45%, #e6d7c3 70%, var(--bg) 100%);
+  }
 
-      /* акценты */
-      --pink:#ff8fb9;
-      --blue:#6ab8ff;
+  /* верх - маленькие таблички */
+  .topbar{
+    display:flex; gap:10px; align-items:center; justify-content:center;
+    padding:10px 10px 0; flex-wrap:wrap;
+  }
+  .plaque{
+    position:relative; display:inline-flex; align-items:center; gap:10px;
+    padding:8px 14px; border-radius:14px;
+    background:linear-gradient(#fff8f0, #f3e7d4);
+    box-shadow:
+      inset 0 0 0 1px #e2d6c2,
+      inset 0 6px 14px rgba(255,255,255,.6),
+      0 3px 8px rgba(0,0,0,.06);
+    border:1px solid #d9c9ae;
+    font-weight:800; letter-spacing:.4px; font-size:13px;
+  }
+  .dot{ width:10px; height:10px; border-radius:50% }
+  .dot.blue{ background:var(--blue); box-shadow:0 0 10px #64b2ff80 }
+  .dot.pink{ background:var(--pink); box-shadow:0 0 10px #ff7cab80 }
 
-      /* стекло/тени */
-      --glass-tint:#ffffff12;
-      --glass-haze:#ffffff80;
-    }
+  /* сцена */
+  .stage{
+    max-width:1200px; margin:18px auto 24px;
+    padding:0 20px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns: minmax(180px, 22vw) 1fr minmax(180px, 22vw);
+    gap:24px; align-items:center;
+  }
+  .side{
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    user-select:none;
+  }
+  .side .tag{
+    padding:6px 12px; border-radius:12px; font-weight:900; letter-spacing:.6px;
+    background:linear-gradient(#fff8f0, #f3e7d4); border:1px solid #d9c9ae;
+    box-shadow: inset 0 0 0 1px #e2d6c2, 0 4px 14px rgba(0,0,0,.05);
+  }
+  .side .num{
+    font-weight:1000; font-size: clamp(72px, 9vw, 150px); line-height:1;
+    text-shadow: 0 10px 24px rgba(0,0,0,.08);
+  }
 
-    /* БАЗА */
-    *{ box-sizing:border-box }
-    html,body{
-      margin:0; height:100%;
-      background:linear-gradient(180deg,var(--bg),var(--bg2));
-      color:var(--text);
-      font-family:"Libre Baskerville", Georgia, serif;
-    }
-    .wrap{
-      min-height:100%;
-      padding:18px;
-      display:grid;
-      grid-template-rows:auto 1fr;
-      gap:16px;
-      position:relative;
-    }
+  /* рамки-кнопки справа сверху */
+  .actions{
+    position:fixed; right:18px; top:12px; display:flex; gap:10px; z-index:10;
+  }
+  .btn{
+    appearance:none; border:none; cursor:pointer;
+    padding:10px 18px; border-radius:14px;
+    color:var(--text); font-weight:900; letter-spacing:.5px;
+    background:linear-gradient(#fff8f0, #f3e7d4);
+    border:1px solid #d9c9ae;
+    box-shadow: inset 0 0 0 1px #e2d6c2, 0 4px 12px rgba(0,0,0,.06);
+    transition:transform .06s ease;
+  }
+  .btn:active{ transform: translateY(1px) }
+  .btn[disabled]{opacity:.6; cursor:default}
 
-    /* Вертикальные панели на стене (лёгкие линии) */
-    .wallLine{
-      position:fixed; top:0; bottom:0; width:1px;
-      background:linear-gradient(var(--panel),#cfbd9f);
-      opacity:.5; pointer-events:none;
-    }
-    .wallLine.l{ left:12vw } .wallLine.r{ right:12vw }
+  /* холст + рамка */
+  .canvasWrap{
+    position:relative; overflow:hidden; border-radius:28px;
+    background: radial-gradient(1300px 900px at 60% -10%, #ffffff, #d9d9d9);
+    box-shadow:
+      inset 0 0 1px rgba(255,255,255,.6),
+      inset 0 10px 40px rgba(255,255,255,.7),
+      inset 0 -30px 60px rgba(0,0,0,.06),
+      0 18px 40px rgba(0,0,0,.08);
+    padding:18px;
+  }
+  .canvasFrame{
+    border-radius:22px; overflow:hidden;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.8),
+      inset 0 40px 120px rgba(255,255,255,.65),
+      inset 0 -60px 120px rgba(0,0,0,.08);
+  }
+  canvas#scene{ display:block; width:100%; height:70vh; background:
+    radial-gradient(1100px 700px at 50% 15%, #fdfdfd 0%, #e6e6e6 65%, #d1d1d1 100%);
+  }
 
-    /* ШАПКА */
-    header{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:12px; transition:opacity .2s ease;
-    }
-    .badges{ display:flex; gap:8px; flex-wrap:wrap; align-items:center }
+  /* победитель */
+  .overlay{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    backdrop-filter: blur(2px); background: radial-gradient(900px 600px at 50% 40%, rgba(255,255,255,.12), rgba(0,0,0,.45));
+    opacity:0; pointer-events:none; transition:opacity .5s ease;
+  }
+  .overlay.show{ opacity:1 }
+  .winner{
+    text-align:center; padding:28px 36px; border-radius:20px;
+    background: rgba(255,255,255,.75);
+    box-shadow: 0 30px 80px rgba(0,0,0,.35), inset 0 0 0 1px #ffffffaa;
+  }
+  .winner h1{ margin:0 0 8px; font-size: clamp(28px, 5vw, 56px) }
+  .winner p { margin:0; color:var(--muted); font-weight:700 }
 
-    /* Рамочные «таблички» и кнопки */
-    .plaque{
-      display:inline-flex; align-items:center; gap:10px;
-      padding:8px 12px; border-radius:14px;
-      background:#fffbf2cc;
-      border:1px solid var(--gold-4);
-      box-shadow:
-        0 0 0 1px #fff inset,
-        0 0 0 3px var(--gold-2) inset,
-        0 8px 22px #0002;
-      font-weight:900; letter-spacing:.5px;
-      text-transform:uppercase; font-size:12px;
-    }
-    .plaque.large{ font-size:14px; padding:10px 16px; border-radius:16px }
-    .dot{ width:10px; height:10px; border-radius:50% }
-    .blue{ background:var(--blue) } .pink{ background:var(--pink) }
+  /* «швы» стены (по умолчанию выключены) */
+  .seam { display: none }
+  body[data-seams="1"] .seam { display:block }
+  .seam{
+    position:fixed; top:0; bottom:0; width:1px; left:50%;
+    transform:translateX(calc(-50vw + 64px)); /* слева от сцены */
+    background: linear-gradient(180deg, transparent, #cebca0 40%, #cebca0 60%, transparent);
+    opacity:.35; pointer-events:none;
+  }
+  .seam.right{
+    left:auto; right:50%; transform:translateX(calc(50vw - 64px));
+  }
 
-    .actions{ display:flex; gap:10px }
-    .btn{ appearance:none; border:none; background:transparent; color:inherit; font:inherit; cursor:pointer }
-    .btn:active{ transform:translateY(1px) }
-
-    /* СЦЕНА */
-    .stage{
-      display:grid;
-      grid-template-columns:minmax(160px,20vw) 1fr minmax(160px,20vw);
-      gap:20px; align-items:center;
-      padding:0 2vw;
-    }
-    .side{ display:flex; flex-direction:column; align-items:center; gap:10px }
-    .score{
-      font-size:clamp(60px,8vw,160px);
-      line-height:1; font-weight:1000;
-      text-shadow:0 10px 28px #0002;
-    }
-
-    .canvasWrap{
-      position:relative;
-      border-radius:26px; padding:28px; overflow:hidden; min-height:66vh;
-      background:
-        radial-gradient(1400px 800px at 50% 10%, #ffffffe6, #fffffff0),
-        linear-gradient(180deg, #fffaf0, #f1e1ca);
-      box-shadow:
-        0 34px 90px #00000018 inset,
-        0 8px 0 #ffffffe0 inset,
-        0 -12px 28px #cfbea6 inset,
-        0 22px 60px #00000022;
-      display:grid; place-items:center;
-    }
-    canvas{ width:100%; height:72vh; display:block }
-
-    /* ФИНАЛЬНЫЙ ОВЕРЛЕЙ */
-    .overlay{
-      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-      background:radial-gradient(900px 540px at 50% 40%, #ffffff6c, #00000046);
-      backdrop-filter:blur(2px);
-      opacity:0; pointer-events:none; transition:opacity .6s ease;
-    }
-    .overlay.show{ opacity:1 }
-    .winnerCard{
-      padding:26px 34px; border-radius:20px;
-      background:#fffffff0; border:1px solid var(--gold-4);
-      box-shadow:0 0 0 2px #fff inset, 0 0 0 4px var(--gold-2) inset, 0 26px 70px #0003;
-      text-align:center;
-    }
-    .winTitle{ margin:0 0 6px; font-size:clamp(26px,4vw,46px); font-weight:1000 }
-    .winSub{ margin:0; color:var(--muted); font-size:clamp(16px,2.2vw,22px) }
-    .glow{ position:absolute; left:50%; top:50%; width:58vmin; height:58vmin; border-radius:50%; filter:blur(38px); opacity:.55; transform:translate(-50%,-50%); pointer-events:none }
-
-    .hidden{ display:none !important }
-
-    /* ФУЛЛСКРИН - компактнее отступы */
-    body.fs .wrap{ padding-top:8px }
-    body.fs canvas{ height:78vh }
-
-    @media (max-width: 960px){
-      .stage{ grid-template-columns:1fr }
-      .side{ order:-1 }
-      canvas{ height:64vh }
-    }
-  </style>
+  @media (max-width: 980px){
+    .grid{ grid-template-columns: 1fr; }
+    .side{ order: 1 }
+    .canvasWrap{ order: 0 }
+    .actions{ right:12px; top:8px }
+    canvas#scene{ height:64vh }
+  }
+</style>
 </head>
-<body>
-  <!-- Панельные линии стены -->
-  <div class="wallLine l"></div>
-  <div class="wallLine r"></div>
+<body data-seams="0">
 
-  <div class="wrap">
-    <!-- ШАПКА (мини-счётчики и кнопки) -->
-    <header id="topbar">
-      <div class="badges">
-        <div class="plaque"><span class="dot blue"></span>Мальчик: <span id="cntBoySmall">0</span></div>
-        <div class="plaque"><span class="dot pink"></span>Девочка: <span id="cntGirlSmall">0</span></div>
-        <div class="plaque" id="scaleInfo">1 шарик = 1 голос</div>
-        <div class="plaque">Итого: <span id="cntTotal">0</span></div>
-      </div>
-      <div class="actions">
-        <button class="btn" id="goBtn"><span class="plaque large">Поехали</span></button>
-        <button class="btn" id="fsBtn"><span class="plaque large">Полный экран</span></button>
-      </div>
-    </header>
+  <!-- маленькие таблички вверху -->
+  <div class="topbar" id="topbar">
+    <div class="plaque"><span class="dot blue"></span>Мальчик: <span id="cntBoySmall">0</span></div>
+    <div class="plaque"><span class="dot pink"></span>Девочка: <span id="cntGirlSmall">0</span></div>
+    <div class="plaque" id="scaleInfo">1 шарик = 1 голос</div>
+    <div class="plaque">Итого: <span id="cntTotal">0</span></div>
+  </div>
 
-    <!-- ОСНОВНАЯ СЦЕНА -->
-    <section class="stage" id="stageRoot">
-      <!-- ЛЕВЫЙ СЧЁТЧИК -->
+  <!-- кнопки -->
+  <div class="actions">
+    <button class="btn" id="fsBtn">ПОЛНОЭКРАННЫЙ</button>
+    <button class="btn" id="goBtn">ПОЕХАЛИ</button>
+  </div>
+
+  <div class="stage">
+    <div class="grid">
       <aside class="side">
-        <div class="plaque">Мальчик</div>
-        <div class="score" id="cntBoyBig">0</div>
+        <div class="tag">МАЛЬЧИК</div>
+        <div class="num" id="cntBoyBig">0</div>
       </aside>
 
-      <!-- КАНВАС С АНИМАЦИЕЙ -->
-      <div class="canvasWrap" id="stage">
-        <canvas id="scene"></canvas>
-
-        <!-- Конфетти -->
-        <canvas id="confetti" class="hidden" style="position:absolute;inset:0;"></canvas>
-
-        <!-- Финальный баннер -->
-        <div id="overlay" class="overlay">
-          <div class="glow" id="glow"></div>
-          <div class="winnerCard">
-            <h1 class="winTitle" id="winTitle">Победитель</h1>
-            <p class="winSub" id="winSub">Все голоса учтены</p>
+      <div class="canvasWrap" id="wrap">
+        <div class="canvasFrame">
+          <canvas id="scene"></canvas>
+        </div>
+        <!-- победитель -->
+        <div class="overlay" id="overlay">
+          <div class="winner">
+            <h1 id="winTitle">Победитель</h1>
+            <p id="winSub">Все голоса учтены</p>
           </div>
         </div>
       </div>
 
-      <!-- ПРАВЫЙ СЧЁТЧИК -->
       <aside class="side">
-        <div class="plaque">Девочка</div>
-        <div class="score" id="cntGirlBig">0</div>
+        <div class="tag">ДЕВОЧКА</div>
+        <div class="num" id="cntGirlBig">0</div>
       </aside>
-    </section>
+    </div>
   </div>
 
-  <script>
-    /* ===================== ПАРАМЕТРЫ ===================== */
-
-    // Подставьте ссылку «Опубликовать в интернете» (CSV) вашей таблицы:
-    const SOURCE_URL =
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vScUpoDoG9BZOfEGgNdecule2fc6mVQBYVCMB5JjksJLZD2Pw48jb9G1wqWqmuuBM2XS2p3lxBm3Dj8/pub?gid=1307519951&single=true&output=csv";
-
-    // Тайминги
-    const POLL_MS = 2000;          // как часто опрашиваем CSV
-    const FALL_DURATION = 1000;    // время падения одного шарика
-    const START_SPACING_MS = 1000; // интервал между стартами шариков
-
-    // Вместимость визуализации
-    const CAPACITY = 60;           // сколько шариков помещаем в колбу
-    const TARGET_FILL = 0.96;      // насколько заполняем видимую высоту
-
-    /* ===================== DOM / КОНТЕКСТ ===================== */
-    const canvas = document.getElementById('scene');
-    const ctx = canvas.getContext('2d');
-
-    // Геометрия банки
-    let jar = {
-      x: 700, y: 820, w: 520, h: 620,
-      neckW: 240, neckH: 78, wall: 16
-    };
-
-    // UI-элементы
-    const cntBoySmall = document.getElementById('cntBoySmall');
-    const cntGirlSmall= document.getElementById('cntGirlSmall');
-    const cntBoyBig   = document.getElementById('cntBoyBig');
-    const cntGirlBig  = document.getElementById('cntGirlBig');
-    const cntTotalEl  = document.getElementById('cntTotal');
-    const scaleInfo   = document.getElementById('scaleInfo');
-    const topbar      = document.getElementById('topbar');
-    const goBtn       = document.getElementById('goBtn');
-    const fsBtn       = document.getElementById('fsBtn');
-
-    // Оверлей победителя
-    const overlay     = document.getElementById('overlay');
-    const winTitle    = document.getElementById('winTitle');
-    const winSub      = document.getElementById('winSub');
-    const glow        = document.getElementById('glow');
-
-    /* ===================== СОСТОЯНИЕ ===================== */
-    let serverSeq = [];            // исходная последовательность голосов ['boy','girl',...]
-    let animatedN = 0;             // сколько уже анимировано
-    let balls = [];                // активные шарики
-    let score = { boy:0, girl:0 }; // текущий счёт
-    let started = false;           // нажали «Поехали»?
-    let finishShownFor = -1;       // для какого количества показан финал
-
-    /* ===================== ВСПОМОГАТЕЛЬНЫЕ ===================== */
-    function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
-    function getCssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-    function pluralRu(n,forms){ const n10=n%10,n100=n%100; if(n10===1&&n100!==11)return forms[0]; if(n10>=2&&n10<=4&&(n100<10||n100>=20))return forms[1]; return forms[2]; }
-    function shadeHex(hex, amt){
-      const m = hex.match(/#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})/i);
-      if(!m) return hex;
-      const f = v => Math.max(0,Math.min(255,parseInt(v,16)+amt));
-      return `#${f(m[1]).toString(16).padStart(2,'0')}${f(m[2]).toString(16).padStart(2,'0')}${f(m[3]).toString(16).padStart(2,'0')}`;
-    }
-
-    /* ===================== РЕСАЙЗ / ГЕОМЕТРИЯ ===================== */
-    function onResize(){
-      const rect = document.getElementById('stage').getBoundingClientRect();
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
-
-      canvas.width  = Math.floor(rect.width * dpr);
-      canvas.height = Math.floor(rect.height * dpr);
-      ctx.setTransform(dpr,0,0,dpr,0,0);
-
-      // размер банки адаптивно к контейнеру
-      jar.w = rect.width * 0.36;
-      jar.h = rect.height* 0.72;
-      jar.x = rect.width/2;
-      jar.y = rect.height*0.88;
-      jar.neckW = clamp(jar.w*0.46, 170, 300);
-      jar.neckH = clamp(rect.height*0.085, 58, 100);
-      jar.wall  = clamp(rect.width*0.014, 12, 22);
-
-      sizeConfettiCanvas();
-    }
-    addEventListener('resize', onResize);
-
-    /* ===================== РИСОВАНИЕ БАЗЫ ===================== */
-    function drawMarbleBase(x,y,w,h){
-      // большая мягкая тень
-      ctx.save();
-      ctx.fillStyle='rgba(0,0,0,.15)';
-      ctx.shadowColor='rgba(0,0,0,.28)';
-      ctx.shadowBlur=50;
-      ctx.beginPath();
-      ctx.ellipse(x, y+h*0.55, w*0.6, h*0.22, 0, 0, Math.PI*2);
-      ctx.fill();
-      ctx.restore();
-
-      // верхняя «тарелка» мрамора
-      const topH=Math.min(90,h*0.14), topY=y+4;
-      let g=ctx.createLinearGradient(0,topY-topH*0.2,0,topY+topH*0.95);
-      g.addColorStop(0,'#ffffffef'); g.addColorStop(1,'#e8dac9');
-      ctx.fillStyle=g; ctx.strokeStyle='#cdbba7'; ctx.lineWidth=2;
-      ctx.beginPath(); ctx.ellipse(x, topY, w*0.58, topH*0.52, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-
-      // блик на тарелке
-      g=ctx.createLinearGradient(0,topY-topH*0.9,0,topY+topH*0.18);
-      g.addColorStop(0,'#fff'); g.addColorStop(1,'#eee0d0');
-      ctx.fillStyle=g;
-      ctx.beginPath(); ctx.ellipse(x, topY-topH*0.42, w*0.48, topH*0.36, 0, 0, Math.PI*2); ctx.fill();
-    }
-
-    /* ===================== РИСОВАНИЕ БАНКИ ===================== */
-    function drawJar(){
-      const {x,y,w,h,neckW,neckH,wall}=jar;
-
-      drawMarbleBase(x,y,w,h);
-
-      const L = x - w/2, T = y - h;
-
-      // общая дымка — объём внутри
-      ctx.save();
-      const haze = ctx.createRadialGradient(x, y-h*0.62, 24, x, y-h*0.62, h*1.0);
-      haze.addColorStop(0,'rgba(255,255,255,.70)');
-      haze.addColorStop(0.55,'rgba(255,255,255,.20)');
-      haze.addColorStop(1,'rgba(0,0,0,.03)');
-      ctx.fillStyle=haze; ctx.fillRect(L+12,T+12,w-24,h-24);
-      ctx.restore();
-
-      // стеклянный контур: симметричные стенки
-      ctx.save();
-      ctx.translate(L,T);
-      ctx.lineWidth = wall;
-      ctx.strokeStyle = 'rgba(202,168,110,.98)';   // «золотистая» обвязка
-      ctx.fillStyle   = 'rgba(255,255,255,.10)';   // лёгкая заливка стекла
-      ctx.beginPath();
-
-      const bulge = 0.22;  // выпуклость
-      ctx.moveTo(w/2 - neckW/2, 0);
-      ctx.lineTo(w/2 - neckW/2, neckH);
-
-      // правая стенка
-      ctx.bezierCurveTo(
-        w*(0.50 + bulge), neckH*0.92,
-        w*0.98,           h*0.30,
-        w*0.84,           h*0.80
-      );
-      ctx.quadraticCurveTo(w*0.80, h*0.98, w*0.60, h*1.00);
-      ctx.lineTo(w*0.40, h*1.00);
-      ctx.quadraticCurveTo(w*0.20, h*0.98, w*0.16, h*0.80);
-
-      // левая стенка (симметрия)
-      ctx.bezierCurveTo(
-        w*0.02,           h*0.30,
-        w*(0.50 - bulge), neckH*0.92,
-        w/2 - neckW/2,    neckH
-      );
-      ctx.closePath();
-      ctx.fill(); ctx.stroke();
-
-      // золотой ободок
-      const gold = ctx.createLinearGradient(0,0,0,wall*2.6);
-      gold.addColorStop(0, getCssVar('--gold-1'));
-      gold.addColorStop(0.5, getCssVar('--gold-2'));
-      gold.addColorStop(1, getCssVar('--gold-4'));
-      ctx.lineWidth = wall*0.9; ctx.strokeStyle = gold;
-      ctx.beginPath(); ctx.ellipse(w/2, 0, neckW/2, wall*1.10, 0, 0, Math.PI*2); ctx.stroke();
-
-      // внутренняя кромка (блик)
-      ctx.globalAlpha=.35; ctx.fillStyle='#fff';
-      ctx.beginPath(); ctx.ellipse(w/2, wall*0.30, neckW*0.34, wall*0.58, 0, 0, Math.PI*2); ctx.fill();
-      ctx.globalAlpha=1;
-
-      // боковые вертикальные блики
-      ctx.globalAlpha=.20; ctx.fillStyle='#fff';
-      ctx.fillRect(w*0.12, neckH+22, 12, h-neckH-70);
-      ctx.globalAlpha=.12; ctx.fillRect(w*0.18, neckH+38, 10, h-neckH-90);
-      ctx.globalAlpha=1;
-
-      ctx.restore();
-    }
-
-    // прямоугольник внутренней области, куда падают шарики (для clip)
-    function jarInnerRect(){
-      const {x,y,w,h,neckW,neckH,wall}=jar;
-      return {
-        left:   x - w/2 + wall*1.6,
-        right:  x + w/2 - wall*1.6,
-        top:    y - h + neckH + wall*1.6 + 8,
-        bottom: y - wall*1.1
-      };
-    }
-
-    /* ===================== РАЗМЕТКА ШАРИКОВ ===================== */
-    function layoutPositions(total){
-      const inner=jarInnerRect();
-      const W=inner.right-inner.left, H=inner.bottom-inner.top;
-      const need=Math.min(total, CAPACITY);
-      if(!need) return [];
-
-      const pad=6, fillH=H*TARGET_FILL;
-
-      // оценка колонок/рядов, чтобы заполнить «почти доверху»
-      let cols=Math.max(1, Math.round(Math.sqrt(need*(W/fillH))));
-      cols=Math.min(need, cols);
-      let rows=Math.ceil(need/cols);
-
-      let rW=(W/cols-pad)/2, rH=(fillH/rows-pad)/2;
-      let r=Math.floor(Math.max(12,Math.min(rW,rH)));
-
-      // если по высоте не влезло — увеличиваем колонки/уменьшаем радиус
-      while((rows*(2*r+pad))>fillH && cols<need){
-        cols++;
-        rows=Math.ceil(need/cols);
-        rW=(W/cols-pad)/2; rH=(fillH/rows-pad)/2;
-        r=Math.floor(Math.max(12,Math.min(rW,rH)));
-      }
-
-      const stepX=2*r+pad, stepY=2*r+pad;
-      const offsetX=(W-cols*stepX)/2;
-
-      const pts=[];
-      let row=0,col=0;
-      for(let i=0;i<need;i++){
-        const x=inner.left+offsetX+(col+.5)*stepX;
-        const y=inner.bottom-(row+.5)*stepY;
-        pts.push({x,y,r});
-        col++; if(col>=cols){ col=0; row++; }
-      }
-      return pts;
-    }
-
-    /* ===================== ОТРИСОВКА ШАРИКА ===================== */
-    function drawGlossyBall(x,y,r,colorVar){
-      const base = getCssVar(colorVar); // hex
-      const g = ctx.createRadialGradient(x-r*.45, y-r*.55, r*.2, x, y, r);
-      g.addColorStop(0,'#ffffff');
-      g.addColorStop(0.16, base);
-      g.addColorStop(1, shadeHex(base, -18));
-      ctx.fillStyle=g;
-
-      // сам шар
-      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
-
-      // верхний блик
-      ctx.save();
-      ctx.globalAlpha=.78; ctx.fillStyle='rgba(255,255,255,.95)';
-      ctx.beginPath(); ctx.ellipse(x-r*.34, y-r*.46, r*.36, r*.24, -.6, 0, Math.PI*2); ctx.fill();
-
-      // нижняя полировка
-      ctx.globalAlpha=.38; ctx.beginPath();
-      ctx.ellipse(x+r*.22, y+r*.26, r*.26, r*.18, -.35, 0, Math.PI*2); ctx.fill();
-      ctx.restore();
-
-      // падающая тень
-      ctx.save(); ctx.beginPath(); ctx.ellipse(x, y+r*.82, r*.95, r*.36, 0, 0, Math.PI*2);
-      const s = ctx.createRadialGradient(x, y+r*.82, 1, x, y+r*.82, r*1.12);
-      s.addColorStop(0,'rgba(0,0,0,.22)'); s.addColorStop(1,'rgba(0,0,0,0)');
-      ctx.fillStyle=s; ctx.fill(); ctx.restore();
-    }
-
-    /* ===================== АНИМАЦИЯ ПАДЕНИЯ ===================== */
-    function animateNewBalls(slice){
-      if(!slice.length) return;
-
-      const spacing = START_SPACING_MS, fall = FALL_DURATION;
-      const totalAfter = animatedN + slice.length;
-      const pos = layoutPositions(totalAfter);
-
-      for(let i=0;i<slice.length;i++){
-        const idx = animatedN + i;
-        const color = slice[i];
-
-        if(idx < CAPACITY){
-          const p = pos[Math.min(pos.length-1, idx)];
-          const neck = jarInnerRect();
-          const sx = (jar.x - jar.neckW/2) + Math.random()*jar.neckW;
-          const sy = neck.top - (80 + Math.random()*120);
-
-          balls.push({
-            color, x:sx, y:sy, tx:p.x, ty:p.y, r:p.r,
-            t0: performance.now() + i*spacing, dur: fall, landed:false
-          });
-        }else{
-          // «лишние» голоса — только счётчик/финал
-          setTimeout(()=>{
-            if(color==='boy') score.boy++; else score.girl++;
-            updateScoreUI(); checkFinish();
-          }, i*spacing + fall);
-        }
-      }
-      animatedN = Math.min(totalAfter, CAPACITY);
-    }
-
-    /* ===================== ГЛАВНЫЙ РЕНДЕР ===================== */
-    function render(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-
-      // общий «ореол» сцены
-      const halo = ctx.createRadialGradient(jar.x, jar.y-jar.h*.62, 20, jar.x, jar.y-jar.h*.62, 1000);
-      halo.addColorStop(0,'rgba(255,255,255,.70)');
-      halo.addColorStop(1,'rgba(0,0,0,0)');
-      ctx.fillStyle=halo; ctx.fillRect(0,0,canvas.width,canvas.height);
-
-      drawJar();
-
-      // область стекла
-      const inner = jarInnerRect();
-      ctx.save(); ctx.beginPath(); ctx.rect(inner.left, inner.top, inner.right-inner.left, inner.bottom-inner.top); ctx.clip();
-
-      // шарики
-      const now = performance.now();
-      for(const b of balls){
-        const t = Math.max(0, Math.min(1, (now - b.t0)/b.dur));
-        const k = 1 - Math.pow(1 - t, 3); // easeOutCubic
-        const x = b.x + (b.tx - b.x)*k;
-        const y = b.y + (b.ty - b.y)*k;
-
-        drawGlossyBall(x, y, b.r, b.color==='girl'?'--pink':'--blue');
-
-        if(t>=1 && !b.landed){
-          b.landed = true;
-          if(b.color==='boy') score.boy++; else score.girl++;
-          updateScoreUI(); checkFinish();
-        }
-      }
-      ctx.restore();
-
-      requestAnimationFrame(render);
-    }
-
-    /* ===================== UI / СЧЁТ / ФИНАЛ ===================== */
-    function updateScoreUI(){
-      cntBoySmall.textContent = score.boy; cntGirlSmall.textContent = score.girl;
-      cntBoyBig.textContent   = score.boy; cntGirlBig.textContent  = score.girl;
-      cntTotalEl.textContent  = score.boy + score.girl;
-
-      const scale = Math.max(1, Math.ceil((serverSeq.length||1)/CAPACITY));
-      scaleInfo.textContent = `1 шарик = ${scale} голос${pluralRu(scale,['','а','ов'])}`;
-    }
-
-    function checkFinish(){
-      const total = score.boy + score.girl;
-      if(!started || serverSeq.length === 0 || total < serverSeq.length) return;
-      if(finishShownFor === serverSeq.length) return;
-
-      const winner = score.boy > score.girl ? 'boy' : (score.girl > score.boy ? 'girl' : 'tie');
-      if(winner === 'tie'){
-        showWinner('Ничья!', 'Вы потрясающая команда ♥', '#9aa0ad');
-      }else if(winner === 'boy'){
-        showWinner('Победил МАЛЬЧИК!', 'Поздравляем родителей!', getCssVar('--blue'));
-      }else{
-        showWinner('Победила ДЕВОЧКА!', 'Поздравляем родителей!', getCssVar('--pink'));
-      }
-      finishShownFor = serverSeq.length;
-    }
-
-    function showWinner(title, subtitle, color){
-      winTitle.textContent = title;
-      winSub.textContent   = subtitle;
-      glow.style.background = color;
-      overlay.classList.add('show');
-      startConfetti(color);
-    }
-    function hideWinner(){
-      overlay.classList.remove('show');
-      stopConfetti();
-    }
-
-    /* ===================== CSV ЗАГРУЗКА ===================== */
-    function normalizeChoice(v){
-      const s=(v||'').toLowerCase();
-      if (s.includes('маль') || s.includes('boy') || s.includes('голуб')) return 'boy';
-      if (s.includes('дев')  || s.includes('girl')|| s.includes('розов')) return 'girl';
-      return '';
-    }
-    function parseCsv(text){
-      const rows=[]; let row=[], cur="", q=false;
-      for(let i=0;i<text.length;i++){
-        const c=text[i], n=text[i+1];
-        if(c=='"'){ if(q&&n=='"'){cur+='"'; i++;} else q=!q; }
-        else if(c==','&&!q){ row.push(cur); cur=""; }
-        else if((c=='\n'||c=='\r')&&!q){ if(cur!==""||row.length){row.push(cur); rows.push(row); row=[]; cur="";} }
-        else cur+=c;
-      }
-      if(cur!==""||row.length){ row.push(cur); rows.push(row); }
-      return rows;
-    }
-    async function fetchSeq(){
-      const url = SOURCE_URL + (SOURCE_URL.includes('?')?'&':'?') + 'nocache=' + Date.now();
-      const res = await fetch(url, {cache:'no-store'});
-      if(!res.ok) return;
-      const text = await res.text();
-      const rows = parseCsv(text).filter(r=>r.length>=2);
-
-      const seq = [];
-      for(let i=1;i<rows.length;i++){
-        const val = (rows[i][1]||"").toString().trim();
-        const norm = normalizeChoice(val);
-        if(norm) seq.push(norm);
-      }
-      serverSeq = seq;
-
-      const scale = Math.max(1, Math.ceil((serverSeq.length||1)/CAPACITY));
-      scaleInfo.textContent = `1 шарик = ${scale} голос${pluralRu(scale,['','а','ов'])}`;
-
-      // если уже показывали финал, а голосов стало больше — спрячем до нового завершения
-      if(finishShownFor>=0 && (score.boy+score.girl)<serverSeq.length) hideWinner();
-    }
-
-    /* ===================== КОНФЕТТИ ===================== */
-    const confettiCanvas = document.getElementById('confetti');
-    const cctx = confettiCanvas.getContext('2d');
-    let confettiTimer=null, confettiParts=[];
-
-    function sizeConfettiCanvas(){
-      const rect = document.getElementById('stage').getBoundingClientRect();
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
-      confettiCanvas.width  = Math.floor(rect.width * dpr);
-      confettiCanvas.height = Math.floor(rect.height * dpr);
-      cctx.setTransform(dpr,0,0,dpr,0,0);
-    }
-
-    function startConfetti(accent){
-      sizeConfettiCanvas();
-      confettiCanvas.classList.remove('hidden');
-      confettiParts = [];
-
-      const colors = [
-        accent.trim(), '#ffffff', 'rgba(255,255,255,.6)',
-        accent.replace('rgb','rgba').replace(')',',.6)')
-      ];
-      const W = confettiCanvas.width, H = confettiCanvas.height;
-      const N = 160;
-
-      // Часть — кружочки, часть — «бумажки»
-      for(let i=0;i<N;i++){
-        const isRect = i%4===0;
-        confettiParts.push({
-          x: Math.random()*W,
-          y: -Math.random()*H*0.3,
-          r: 3 + Math.random()*5,
-          a: Math.random()*Math.PI*2,
-          s: 0.8 + Math.random()*1.4,
-          v: 30 + Math.random()*70,
-          w: isRect ? (6+Math.random()*10) : 0,   // ширина прямоугольника
-          h: isRect ? (2+Math.random()*5)  : 0,   // высота прямоугольника
-          rect: isRect,
-          col: colors[i%colors.length],
-          rot: Math.random()*Math.PI*2,
-          rotv: (Math.random()-.5)*2
-        });
-      }
-
-      let last = performance.now();
-      function tick(){
-        const now = performance.now(); const dt = Math.min(0.033, (now-last)/1000); last=now;
-        cctx.clearRect(0,0,W,H);
-        for(const p of confettiParts){
-          p.y += p.v * dt;
-          p.x += Math.sin(p.a += dt*5) * 30 * dt;
-          p.rot += p.rotv * dt;
-
-          cctx.save();
-          cctx.translate(p.x, p.y);
-          cctx.rotate(p.rot);
-          cctx.fillStyle = p.col;
-
-          if(p.rect){
-            cctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-          }else{
-            cctx.beginPath(); cctx.arc(0,0,p.r,0,Math.PI*2); cctx.fill();
-          }
-          cctx.restore();
-        }
-        confettiTimer = requestAnimationFrame(tick);
-      }
-      confettiTimer = requestAnimationFrame(tick);
-
-      // авто-выключение через 8 сек
-      setTimeout(stopConfetti, 8000);
-    }
-    function stopConfetti(){
-      if(confettiTimer){ cancelAnimationFrame(confettiTimer); confettiTimer=null; }
-      confettiCanvas.classList.add('hidden');
-    }
-
-    /* ===================== КНОПКИ / СТАРТ ===================== */
-    async function enterFullscreen(){
-      try{ await document.documentElement.requestFullscreen(); }catch(e){}
-      document.body.classList.add('fs');
-      fsBtn.classList.add('hidden');
-    }
-    function exitFullscreenIfAny(){
-      if(document.fullscreenElement){
-        try{ document.exitFullscreen(); }catch(e){}
-      }
-      document.body.classList.remove('fs');
-      fsBtn.classList.remove('hidden');
-    }
-
-    // «Поехали»: полноэкранный режим, скрыть верхнюю панель, запустить анимацию
-    async function startShow(){
-      if(started) return;
-      started = true;
-
-      await enterFullscreen();
-      topbar.style.opacity = 0;
-      setTimeout(()=>topbar.classList.add('hidden'), 200);
-      goBtn.classList.add('hidden');
-
-      balls = [];
-      score = { boy:0, girl:0 };
-      animatedN = 0;
-      finishShownFor = -1;
-      hideWinner(); updateScoreUI();
-
-      if(serverSeq.length){
-        const first = serverSeq.slice(0, CAPACITY);
-        animateNewBalls(first);
-
-        if(serverSeq.length > CAPACITY){
-          const extra = serverSeq.length - CAPACITY;
-          for(let i=0;i<extra;i++){
-            const color = serverSeq[CAPACITY + i];
-            setTimeout(()=>{
-              if(color==='boy') score.boy++; else score.girl++;
-              updateScoreUI(); checkFinish();
-            }, (animatedN + i) * START_SPACING_MS + FALL_DURATION);
-          }
-        }
-      }
-    }
-
-    function forceRefresh(){
-      fetchSeq().then(()=>{
-        if(started){
-          const tail = serverSeq.slice(animatedN);
-          if(tail.length) animateNewBalls(tail);
-        }
-      }).catch(()=>{});
-    }
-
-    /* ===================== ИНИЦИАЛИЗАЦИЯ ===================== */
-    onResize();
-    requestAnimationFrame(render);
-    fetchSeq();
-    setInterval(fetchSeq, POLL_MS);
-
-    // Кнопки
-    goBtn.addEventListener('click', startShow);
-    fsBtn.addEventListener('click', enterFullscreen);
-
-    // Выход из фуллскрина — вернуть шапку
-    document.addEventListener('fullscreenchange', ()=>{
-      if(!document.fullscreenElement){
-        document.body.classList.remove('fs');
-        topbar.classList.remove('hidden');
-        requestAnimationFrame(()=> topbar.style.opacity = 1);
-        fsBtn.classList.remove('hidden');
-      }
+  <!-- факультативные «швы» стены -->
+  <div class="seam"></div><div class="seam right"></div>
+
+<script>
+/* ===== ВАША ТАБЛИЦА (CSV) ===== */
+const SOURCE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScUpoDoG9BZOfEGgNdecule2fc6mVQBYVCMB5JjksJLZD2Pw48jb9G1wqWqmuuBM2XS2p3lxBm3Dj8/pub?gid=1307519951&single=true&output=csv";
+
+/* ===== настройки ===== */
+const POLL_MS = 2000;
+const FALL_DURATION = 1000;
+const START_SPACING_MS = 1000;
+const CAPACITY = 70;
+
+/* ===== ссылки на DOM ===== */
+const canvas = document.getElementById('scene');
+const ctx = canvas.getContext('2d');
+const overlay = document.getElementById('overlay');
+const winTitle= document.getElementById('winTitle');
+const winSub  = document.getElementById('winSub');
+
+const cntBoySmall = document.getElementById('cntBoySmall');
+const cntGirlSmall= document.getElementById('cntGirlSmall');
+const cntBoyBig   = document.getElementById('cntBoyBig');
+const cntGirlBig  = document.getElementById('cntGirlBig');
+const cntTotalEl  = document.getElementById('cntTotal');
+const scaleInfo   = document.getElementById('scaleInfo');
+
+const goBtn = document.getElementById('goBtn');
+const fsBtn = document.getElementById('fsBtn');
+
+/* ===== состояние ===== */
+let jar = {x:0,y:0,w:0,h:0, neckW:0, neckH:0, wall:0};
+let serverSeq=[], animatedN=0, balls=[], score={boy:0, girl:0};
+let started=false, finishShownFor=-1;
+
+/* ===== утилиты ===== */
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp =(a,b,t)=>a+(b-a)*t;
+const easeOut = t => 1 - Math.pow(1-t,3);
+function pluralRu(n, forms){ const n10=n%10, n100=n%100; if(n10===1&&n100!==11)return forms[0]; if(n10>=2&&n10<=4&&(n100<10||n100>=20))return forms[1]; return forms[2]; }
+function normalizeChoice(v){
+  const s = (v||"").toLowerCase();
+  if (s.includes("маль")||s.includes("boy") || s.includes("голуб")) return "boy";
+  if (s.includes("дев") ||s.includes("girl")|| s.includes("розов")) return "girl";
+  return "";
+}
+
+/* ===== размеры ===== */
+function onResize(){
+  const dpr = Math.min(2, window.devicePixelRatio||1);
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = Math.floor(rect.width * dpr);
+  canvas.height= Math.floor(rect.height* dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+
+  // банка — пропорции ближе к референсу
+  const margin = 40;
+  const areaW = rect.width - margin*2;
+  const areaH = rect.height - margin*2;
+  const jarW = areaW*0.32;
+  const jarH = areaH*0.70;
+
+  jar.w = jarW; jar.h = jarH;
+  jar.x = rect.width/2;
+  jar.y = rect.height*0.85;
+  jar.neckW = clamp(jarW*0.46, 160, 260);
+  jar.neckH = clamp(jarH*0.12,  70, 110);
+  jar.wall  = clamp(jarW*0.04,  10,  22);
+}
+addEventListener('resize', onResize);
+
+/* ===== внутренняя прямоугольная область (куда кладём шарики) ===== */
+function jarInnerRect(){
+  const {x,y,w,h,neckW,neckH,wall}=jar;
+  const r = Math.min(100, w*0.22);
+  return {
+    left:   x-w/2 + wall*1.3 + r*0.05,
+    right:  x+w/2 - wall*1.3 - r*0.05,
+    top:    y-h + neckH + wall*1.1 + r*0.06,
+    bottom: y - wall*1.0 - r*0.35
+  };
+}
+
+/* ===== аккуратный путь банки ===== */
+function pathJarOuter(){
+  const {x,y,w,h,neckW,neckH,wall}=jar;
+  const r = Math.min(100, w*0.22);
+
+  const left   = x - w/2;
+  const right  = x + w/2;
+  const top    = y - h;
+  const bottom = y;
+
+  ctx.beginPath();
+
+  // горлышко (вертикальная шейка)
+  ctx.moveTo(x - neckW/2, top + neckH);
+  // левый верхний угол шейки
+  ctx.lineTo(x - neckW/2, top + neckH*0.35);
+
+  // левый плавный изгиб в «плечо»
+  ctx.quadraticCurveTo(
+    left + wall*0.8,          top + neckH*0.35,
+    left + wall*0.8,          top + neckH + r*0.45
+  );
+
+  // левая боковая дуга
+  ctx.bezierCurveTo(
+    left + wall*0.2,  top + neckH + h*0.22,
+    left + wall*0.2,  bottom - h*0.22,
+    left + wall*0.8,  bottom - r*0.35
+  );
+
+  // дно — почти прямая с небольшим радиусом
+  ctx.quadraticCurveTo(
+    x,                  bottom,
+    right - wall*0.8,   bottom - r*0.35
+  );
+
+  // правая боковая дуга вверх
+  ctx.bezierCurveTo(
+    right - wall*0.2, top + neckH + h*0.78,
+    right - wall*0.2, top + neckH + h*0.22,
+    right - wall*0.8, top + neckH + r*0.45
+  );
+
+  // правое плечо в шейку
+  ctx.quadraticCurveTo(
+    right - wall*0.8,      top + neckH*0.35,
+    x + neckW/2,           top + neckH*0.35
+  );
+  ctx.lineTo(x + neckW/2, top + neckH);
+
+  // верхнее «кольцо» мы рисуем отдельно
+  ctx.closePath();
+}
+
+/* ===== мраморный пьедестал ===== */
+function drawPlinth(){
+  const {x,y,w}=jar;
+  const aw = w*1.2, ah = w*0.20; // верхняя тарелка
+  const bw = w*1.4, bh = w*0.26; // нижняя тень
+
+  // нижняя мягкая тень
+  const g = ctx.createRadialGradient(x, y+6, 2, x, y+6, bw/2);
+  g.addColorStop(0, "rgba(0,0,0,.18)");
+  g.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.ellipse(x, y+6, bw/2, bh/2, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // верхний белый диск (псевдо-мрамор)
+  const g2 = ctx.createRadialGradient(x, y, 2, x, y, aw/2);
+  g2.addColorStop(0, "#fffdfa");
+  g2.addColorStop(1, "#efe5d6");
+  ctx.fillStyle = g2;
+  ctx.strokeStyle = "#d9c9ae";
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.ellipse(x, y-2, aw/2, ah/2, 0, 0, Math.PI*2);
+  ctx.fill(); ctx.stroke();
+}
+
+/* ===== блестящее «золотое» кольцо горлышка ===== */
+function drawNeckRing(){
+  const {x,y,w,h,neckW,neckH}=jar;
+  const top = y - h;
+
+  const outerR = neckW/2;
+  const innerR = neckW/2 - Math.max(10, w*0.04);
+
+  // обод с градиентом
+  const g = ctx.createLinearGradient(0, top, 0, top + neckH*0.8);
+  g.addColorStop(0,  "#fff6d9");
+  g.addColorStop(0.45,"#f7e9bb");
+  g.addColorStop(0.6, "#caa866");
+  g.addColorStop(1,  "#a37a39");
+
+  ctx.save();
+  ctx.translate(x, top + neckH*0.3);
+  ctx.scale(1, 0.55);
+
+  ctx.beginPath();
+  ctx.ellipse(0,0, outerR, outerR*0.45, 0, 0, Math.PI*2);
+  ctx.fillStyle = g; ctx.fill();
+
+  // внутреннее отверстие
+  ctx.globalCompositeOperation = "destination-out";
+  ctx.beginPath();
+  ctx.ellipse(0,0, innerR, innerR*0.45, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // внутренний серый «просвет»
+  ctx.globalCompositeOperation = "source-over";
+  ctx.beginPath();
+  ctx.ellipse(0,0, innerR, innerR*0.45, 0, 0, Math.PI*2);
+  const g2 = ctx.createLinearGradient(0,-innerR*0.45,0,innerR*0.45);
+  g2.addColorStop(0,"#e6e6e6");
+  g2.addColorStop(1,"#cccccc");
+  ctx.fillStyle=g2; ctx.globalAlpha=.7; ctx.fill();
+  ctx.restore();
+}
+
+/* ===== рисуем банку (стекло) ===== */
+function drawJar(){
+  drawPlinth();
+
+  const inner = jarInnerRect();
+
+  // задний «столб света»
+  ctx.save();
+  ctx.globalAlpha=.9;
+  const gBack = ctx.createLinearGradient(0, inner.top, 0, inner.bottom);
+  gBack.addColorStop(0, "#ffffffaa");
+  gBack.addColorStop(0.5, "#ffffff66");
+  gBack.addColorStop(1, "#ffffff10");
+  ctx.fillStyle=gBack;
+  ctx.fillRect(inner.left+10, inner.top, (inner.right-inner.left)-20, inner.bottom-inner.top);
+  ctx.restore();
+
+  // контур банки золотом
+  pathJarOuter();
+  const gold = ctx.createLinearGradient(0, inner.top, 0, inner.bottom);
+  gold.addColorStop(0,  "#f7e9bb");
+  gold.addColorStop(0.35,"#e9d29a");
+  gold.addColorStop(0.65,"#caa866");
+  gold.addColorStop(1,  "#a37a39");
+  ctx.lineWidth = Math.max(8, jar.wall);
+  ctx.strokeStyle = gold;
+  ctx.stroke();
+
+  // стекло — блики
+  pathJarOuter();
+  ctx.save();
+  ctx.clip();
+
+  // мягкий центральный блик
+  const cx = jar.x + (inner.right-inner.left)*0.10;
+  const cy = (inner.top+inner.bottom)/2;
+  const rg = ctx.createRadialGradient(cx, cy, 10, cx, cy, (inner.right-inner.left));
+  rg.addColorStop(0, "#ffffff85");
+  rg.addColorStop(1, "#ffffff00");
+  ctx.fillStyle = rg;
+  ctx.fillRect(inner.left-30, inner.top-50, (inner.right-inner.left)+60, (inner.bottom-inner.top)+100);
+
+  // правое вертикальное отражение
+  const gR = ctx.createLinearGradient(inner.right-24, inner.top, inner.right+12, inner.top);
+  gR.addColorStop(0, "#ffffffaa");
+  gR.addColorStop(1, "#ffffff00");
+  ctx.fillStyle=gR;
+  ctx.fillRect(inner.right-24, inner.top, 36, inner.bottom-inner.top);
+
+  // левое мягкое отражение
+  const gL = ctx.createLinearGradient(inner.left-18, inner.top, inner.left+20, inner.top);
+  gL.addColorStop(0, "#ffffff00");
+  gL.addColorStop(1, "#ffffff66");
+  ctx.fillStyle=gL;
+  ctx.fillRect(inner.left-18, inner.top, 38, inner.bottom-inner.top);
+
+  ctx.restore();
+
+  // верхнее кольцо
+  drawNeckRing();
+}
+
+/* ===== раскладка мест для шаров ===== */
+function layoutPositions(total){
+  const inner = jarInnerRect();
+  const width = inner.right - inner.left;
+  const height= inner.bottom - inner.top;
+
+  const need = Math.min(total, CAPACITY);
+  const targetFill = 0.88;
+
+  let r = Math.max(10, Math.floor(width / 18));
+  let step = r*2 + 5;
+  let cols = Math.max(1, Math.floor(width / step));
+  let rows = Math.ceil(need / cols);
+  const maxH = height * targetFill;
+
+  if (rows * step > maxH){
+    r = Math.floor((maxH / rows - 5)/2);
+    r = Math.max(8, r);
+    step = r*2 + 5;
+    cols = Math.max(1, Math.floor(width/step));
+    rows = Math.ceil(need / cols);
+  }
+
+  const pos=[];
+  let row=0, col=0;
+  for(let i=0;i<need;i++){
+    const px = inner.left + (col+0.5)*step;
+    const py = inner.bottom - (row+0.5)*step;
+    pos.push({x:px,y:py,r});
+    col++; if(col>=cols){col=0; row++; }
+  }
+  return pos;
+}
+
+/* ===== шарики ===== */
+function animateNewBalls(slice){
+  if (!slice.length) return;
+
+  const spacing = START_SPACING_MS, fallDur = FALL_DURATION;
+  const totalAfter = animatedN + slice.length;
+  const positions = layoutPositions(totalAfter);
+
+  for (let i=0;i<slice.length;i++){
+    const idx   = animatedN + i;
+    const color = slice[i];
+    const p = positions[Math.min(positions.length-1, idx)];
+    const inner = jarInnerRect();
+
+    // старт над горлышком
+    const sx = (jar.x - jar.neckW/2) + Math.random()*jar.neckW;
+    const sy = inner.top - (80 + Math.random()*120);
+
+    balls.push({
+      color,
+      x:sx, y:sy, tx:p.x, ty:p.y, r:p.r,
+      t0: performance.now() + i*spacing, dur: fallDur, landed:false
     });
-  </script>
+  }
+  animatedN = Math.min(totalAfter, CAPACITY);
+}
+
+function drawBall(b){
+  const col = b.color==='girl' ? getComputedStyle(document.documentElement).getPropertyValue('--pink')
+                               : getComputedStyle(document.documentElement).getPropertyValue('--blue');
+
+  // тенёк
+  ctx.save();
+  const shadowY = b.y + b.r*0.85;
+  const sg = ctx.createRadialGradient(b.x, shadowY, 2, b.x, shadowY, b.r*1.2);
+  sg.addColorStop(0, "rgba(0,0,0,.18)");
+  sg.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = sg;
+  ctx.beginPath();
+  ctx.ellipse(b.x, shadowY, b.r*1.2, b.r*0.6, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+
+  // сам шар (основной)
+  ctx.save();
+  const g = ctx.createRadialGradient(b.x - b.r*0.35, b.y - b.r*0.35, 2, b.x, b.y, b.r);
+  g.addColorStop(0, "#ffffff");
+  g.addColorStop(0.18, "#ffffff");
+  g.addColorStop(0.22, col.trim());
+  g.addColorStop(1, col.trim());
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+  ctx.fill();
+
+  // белый блик
+  ctx.globalAlpha=.9;
+  ctx.beginPath();
+  ctx.arc(b.x - b.r*0.35, b.y - b.r*0.38, b.r*0.35, 0, Math.PI*2);
+  ctx.fillStyle="#ffffff";
+  ctx.fill();
+  ctx.restore();
+}
+
+/* ===== основной рендер ===== */
+function render(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  drawJar();
+
+  const now = performance.now();
+  const inner = jarInnerRect();
+
+  // слой шаров под клипом банки
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(inner.left, inner.top, inner.right-inner.left, inner.bottom-inner.top);
+  ctx.clip();
+
+  for (const b of balls){
+    const t = clamp((now - b.t0)/b.dur, 0, 1);
+    const k = easeOut(t);
+
+    b.drawX = lerp(b.x,  b.tx, k);
+    b.drawY = lerp(b.y,  b.ty, k);
+    drawBall({ ...b, x:b.drawX, y:b.drawY });
+
+    if (t>=1 && !b.landed){
+      b.landed = true;
+      if (b.color==='boy') score.boy++; else score.girl++;
+      updateScoreUI(); checkFinish();
+    }
+  }
+  ctx.restore();
+
+  requestAnimationFrame(render);
+}
+
+/* ===== UI ===== */
+function updateScoreUI(){
+  cntBoySmall.textContent = score.boy;
+  cntGirlSmall.textContent= score.girl;
+  cntBoyBig.textContent   = score.boy;
+  cntGirlBig.textContent  = score.girl;
+  cntTotalEl.textContent  = score.boy + score.girl;
+
+  const scale = Math.max(1, Math.ceil((serverSeq.length||1)/CAPACITY));
+  scaleInfo.textContent = `1 шарик = ${scale} голос${pluralRu(scale,['','а','ов'])}`;
+}
+function showWinner(title, sub){
+  winTitle.textContent = title; winSub.textContent = sub;
+  overlay.classList.add('show');
+}
+function hideWinner(){ overlay.classList.remove('show'); }
+
+/* ===== CSV ===== */
+function parseCsv(text){
+  const rows=[]; let row=[], cur="", inQ=false;
+  for (let i=0;i<text.length;i++){
+    const c=text[i], n=text[i+1];
+    if (c=='"'){ if(inQ&&n=='"'){cur+='"'; i++;} else inQ=!inQ; }
+    else if (c==','&&!inQ){ row.push(cur); cur=""; }
+    else if ((c=='\n'||c=='\r')&&!inQ){ if(cur!==""||row.length){row.push(cur); rows.push(row); row=[]; cur="";} }
+    else cur+=c;
+  }
+  if (cur!==""||row.length){ row.push(cur); rows.push(row); }
+  return rows;
+}
+async function fetchSeq(){
+  try{
+    const url = SOURCE_URL + (SOURCE_URL.includes('?')?'&':'?') + 'nocache=' + Date.now();
+    const res = await fetch(url,{cache:'no-store'}); if(!res.ok) return;
+    const text = await res.text();
+    const rows = parseCsv(text).filter(r=>r.length>=2);
+    const seq = [];
+    for (let i=1;i<rows.length;i++){
+      const v = (rows[i][1]||"").toString().trim();
+      const n = normalizeChoice(v); if(n) seq.push(n);
+    }
+    serverSeq = seq;
+    const scale = Math.max(1, Math.ceil((serverSeq.length||1)/CAPACITY));
+    scaleInfo.textContent = `1 шарик = ${scale} голос${pluralRu(scale,['','а','ов'])}`;
+    if (finishShownFor>=0 && (score.boy+score.girl) < serverSeq.length) hideWinner();
+  }catch(e){}
+}
+
+/* ===== финал ===== */
+function checkFinish(){
+  if (!started) return;
+  const totalNow = score.boy + score.girl;
+  if (serverSeq.length===0 || totalNow < serverSeq.length) return;
+  if (finishShownFor === serverSeq.length) return;
+
+  const boy=score.boy, girl=score.girl;
+  if (boy>girl) showWinner('Победил МАЛЬЧИК!','Поздравляем родителей!');
+  else if (girl>boy) showWinner('Победила ДЕВОЧКА!','Поздравляем родителей!');
+  else showWinner('Ничья!','Вы потрясающая команда ♥');
+  finishShownFor = serverSeq.length;
+}
+
+/* ===== запуск ===== */
+onResize();
+requestAnimationFrame(render);
+fetchSeq();
+setInterval(fetchSeq, POLL_MS);
+
+goBtn.addEventListener('click', async ()=>{
+  if (started) return;
+  started = true;
+  overlay.classList.remove('show');
+  balls=[]; score={boy:0,girl:0}; animatedN=0; finishShownFor=-1; updateScoreUI();
+
+  // полноэкранный по желанию (кнопкой отдельной)
+  if (document.fullscreenElement) document.body.classList.add('fs');
+
+  if (serverSeq.length){
+    const first = serverSeq.slice(0, CAPACITY);
+    animateNewBalls(first);
+    if (serverSeq.length > CAPACITY){
+      let extra = serverSeq.length - CAPACITY;
+      for (let i=0;i<extra;i++){
+        const color = serverSeq[CAPACITY+i];
+        setTimeout(()=>{ if(color==='boy')score.boy++; else score.girl++; updateScoreUI(); checkFinish(); }, (animatedN+i)*START_SPACING_MS + FALL_DURATION);
+      }
+    }
+  }
+});
+
+fsBtn.addEventListener('click', async ()=>{
+  try{
+    if(!document.fullscreenElement){
+      await document.documentElement.requestFullscreen();
+      fsBtn.style.display='none'; // спрятать как просили
+    } else {
+      await document.exitFullscreen();
+    }
+  }catch(e){}
+});
+
+document.addEventListener('fullscreenchange', ()=>{
+  if (document.fullscreenElement) document.body.classList.add('fs');
+  else { document.body.classList.remove('fs'); fsBtn.style.display=''; }
+});
+</script>
 </body>
 </html>
