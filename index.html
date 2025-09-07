@@ -5,123 +5,126 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Колба голосов — Мальчик vs Девочка</title>
 <style>
-  :root { --pink:#ff6fae; --blue:#57a9ff; --bg:#0b0c12; --panel:#131521; --border:#2a2d3a; --text:#e9ecf3; --muted:#9aa0ad; }
+  /* Палитра под «классический» стиль */
+  :root{
+    --bg:#f5eadd;
+    --bg-2:#f1e2d3;
+    --frame:#caa86e;           /* золото */
+    --frame-dark:#a8884f;
+    --text:#5c4931;
+    --muted:#8b7a62;
+    --glass:#ffffff18;
+    --pink:#ff7fab;            /* шарики */
+    --blue:#65b6ff;
+  }
   *{box-sizing:border-box}
-  html,body{margin:0;height:100%;background:radial-gradient(1200px 800px at 30% 15%, #1a1d2c, var(--bg));color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto}
-  .wrap{min-height:100%;padding:16px;display:grid;grid-template-rows:auto auto 1fr;gap:12px}
-  header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-radius:16px;background:linear-gradient(180deg,#1b1e2c,#101320);border:1px solid var(--border); transition:opacity .2s ease}
-  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-  .pill{padding:10px 14px;border-radius:999px;background:#0d1020;border:1px solid #272a38;font-weight:800}
-  .pill .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px;vertical-align:middle}
-  .pill.pink .dot{background:var(--pink)} .pill.blue .dot{background:var(--blue)}
-  .muted{color:var(--muted)}
+  html,body{margin:0;height:100%;background:linear-gradient(180deg,var(--bg),var(--bg-2));color:var(--text);font-family: ui-serif, Georgia, "Times New Roman", serif}
+  .wrap{min-height:100%;padding:18px;display:grid;grid-template-rows:auto auto 1fr;gap:16px}
 
-  /* Кнопки */
-  .cta{width:100%; display:flex; justify-content:center; transition:opacity .2s ease}
-  .btn{appearance:none;border:none;cursor:pointer;padding:10px 16px;border-radius:12px;background:#0d1020;border:1px solid #292c3a;color:#e9ecf3;font-weight:700;transition:transform .05s ease}
-  .btn:active{transform:translateY(1px)} .btn[disabled]{opacity:.6;cursor:default}
-  .btn-go{font-size:20px; padding:14px 28px; border-radius:16px;background:linear-gradient(180deg,#2b2f45,#191c2d);border:1px solid #3a3e55;box-shadow:0 8px 32px rgba(80,100,255,.25), inset 0 0 0 1px rgba(255,255,255,.03)}
-  .btn-go .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#57a9ff;margin-right:10px;box-shadow:0 0 12px #57a9ff80}
+  /* Золотые «рамочки» */
+  .frame{
+    position:relative; display:inline-flex; align-items:center; justify-content:center;
+    padding:12px 18px; min-width:140px; background:#fff7; border-radius:14px;
+    color:var(--text); font-weight:800; letter-spacing:.5px; text-transform:uppercase;
+    box-shadow: 0 0 0 2px #fff inset, 0 0 0 4px var(--frame) inset, 0 12px 30px #00000012;
+    border:1px solid var(--frame-dark);
+  }
+  .frame.small{font-size:12px; padding:10px 14px}
+  .frame .dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:8px}
+  .frame .dot.blue{background:var(--blue)} .frame .dot.pink{background:var(--pink)}
 
-  /* Сцена */
+  header{display:flex;align-items:center;justify-content:space-between; gap:12px}
+  .leftBadges{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  .rightButtons{display:flex; gap:10px; align-items:center}
+  .btn{appearance:none;border:none;background:transparent;color:inherit;font:inherit;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+
+  /* Сцена: колба по центру, счётчики-рамки по бокам */
   .stage{
     display:grid;
-    grid-template-columns: minmax(140px, 18vw) 1fr minmax(140px, 18vw);
-    gap: 16px; align-items:center;
+    grid-template-columns: minmax(160px, 22vw) 1fr minmax(160px, 22vw);
+    gap: 18px; align-items:center;
   }
   .side{
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    background:linear-gradient(180deg,#171a28,#0f1120);
-    border:1px solid var(--border); border-radius:20px; padding:16px 10px;
+    display:flex; flex-direction:column; align-items:center; gap:10px;
   }
-  .side .label{
-    display:flex; align-items:center; gap:10px; font-weight:900; letter-spacing:.5px; text-transform:uppercase; opacity:.9
-  }
-  .side .label .dot{width:14px;height:14px;border-radius:50%}
-  .side.left  .label .dot{background:var(--blue); box-shadow:0 0 18px #57a9ff80}
-  .side.right .label .dot{background:var(--pink); box-shadow:0 0 18px #ff6fae80}
-  .side .value{
-    font-weight:1000; line-height:1; margin-top:10px;
-    font-size: clamp(48px, 8vw, 140px);
-    text-shadow: 0 8px 28px rgba(0,0,0,.35);
+  .scoreValue{
+    font-size: clamp(52px, 7.5vw, 140px); line-height:1; font-weight:1000;
+    text-shadow: 0 10px 30px #00000018;
   }
 
   .canvasWrap{
-    position:relative;
-    background:linear-gradient(180deg,#171a28,#0f1120);
-    border:1px solid var(--border); border-radius:20px; padding:8px;
-    display:grid; place-items:center; min-height:60vh; overflow:hidden;
+    position:relative; border-radius:22px; padding:22px;
+    background: radial-gradient(1000px 600px at 50% 0%, #ffffff64, #ffffff12);
+    box-shadow: 0 30px 60px #00000014 inset, 0 20px 60px #00000010;
+    min-height:64vh; display:grid; place-items:center; overflow:hidden;
   }
   canvas{width:100%;height:72vh;display:block}
 
-  /* Финальный оверлей */
+  /* Оверлей победителя */
   .overlay{
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    background:radial-gradient(800px 500px at 50% 40%, rgba(255,255,255,.08), rgba(0,0,0,.6));
+    background:radial-gradient(800px 500px at 50% 40%, rgba(255,255,255,.3), rgba(0,0,0,.35));
     backdrop-filter: blur(2px);
     opacity:0; pointer-events:none; transition:opacity .6s ease;
   }
   .overlay.show{opacity:1}
   .winnerCard{
-    text-align:center; padding:28px 40px; border-radius:24px;
-    background:rgba(13,16,32,.72); border:1px solid rgba(90,100,140,.35);
-    box-shadow:0 20px 80px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.04);
-    animation: pop .5s ease;
+    text-align:center; padding:28px 40px; border-radius:22px;
+    background:rgba(255,255,255,.65);
+    box-shadow: 0 0 0 2px #fff inset, 0 0 0 4px var(--frame) inset, 0 30px 80px #00000028;
+    border:1px solid var(--frame-dark);
   }
-  @keyframes pop{ from{ transform:scale(.96); opacity:.5 } to{ transform:scale(1); opacity:1 } }
-  .winTitle{
-    font-size: clamp(28px, 4vw, 48px); font-weight:1000; letter-spacing:.5px; margin:0 0 6px;
-    text-shadow: 0 6px 30px rgba(0,0,0,.55);
-  }
-  .winSub{font-size: clamp(18px, 2.2vw, 24px); color:var(--muted); margin:0;}
-  .glow{
-    position:absolute; inset:auto; width:60vmin; height:60vmin; border-radius:50%;
-    filter: blur(40px); opacity:.55; pointer-events:none; transform:translate(-50%,-50%);
-    left:50%; top:50%;
-  }
+  .winTitle{font-size: clamp(28px, 4vw, 48px); font-weight:1000; letter-spacing:.5px; margin:0 0 6px}
+  .winSub{font-size: clamp(18px, 2.2vw, 24px); color:var(--muted); margin:0}
+  .glow{position:absolute; left:50%; top:50%; width:60vmin;height:60vmin;border-radius:50%; filter:blur(40px); opacity:.55; transform:translate(-50%,-50%); pointer-events:none}
 
   .hidden{display:none !important}
-  body.fs .wrap{padding-top:6px}
+  body.fs .wrap{padding-top:10px}
   body.fs canvas{height:78vh}
 
-  @media (max-width: 900px){
+  @media (max-width: 950px){
     .stage{grid-template-columns: 1fr}
-    .side{display:none}
+    .side{order:-1}
+    .scoreValue{font-size: clamp(42px, 14vw, 110px)}
     canvas{height:65vh}
   }
 </style>
 </head>
 <body>
 <div class="wrap">
+
+  <!-- Верх: мини-счётчики + рамочки-кнопки -->
   <header id="topbar">
-    <div class="row" style="gap:16px">
-      <div class="pill blue"><span class="dot"></span>Мальчик: <span id="cntBoySmall">0</span></div>
-      <div class="pill pink"><span class="dot"></span>Девочка: <span id="cntGirlSmall">0</span></div>
-      <div class="pill muted">Итого: <span id="cntTotal">0</span></div>
-      <div class="pill muted" id="scaleInfo">1 шарик = 1 голос</div>
+    <div class="leftBadges">
+      <div class="frame small"><span class="dot blue"></span>Мальчик: <span id="cntBoySmall" style="margin-left:6px">0</span></div>
+      <div class="frame small"><span class="dot pink"></span>Девочка: <span id="cntGirlSmall" style="margin-left:6px">0</span></div>
+      <div class="frame small" id="scaleInfo">1 шарик = 1 голос</div>
+      <div class="frame small">Итого: <span id="cntTotal" style="margin-left:6px">0</span></div>
     </div>
-    <div class="row">
-      <button class="btn" onclick="toggleFullscreen()">На весь экран</button>
-      <button class="btn" onclick="forceRefresh()">Обновить</button>
+
+    <div class="rightButtons" id="buttonsRow">
+      <button class="btn" id="goBtnTop" onclick="startShow()">
+        <span class="frame">Поехали</span>
+      </button>
+      <button class="btn" id="fsBtnTop" onclick="enterFullscreen()">
+        <span class="frame">Полный экран</span>
+      </button>
     </div>
   </header>
 
-  <div class="cta" id="ctaRow">
-    <button id="goBtn" class="btn btn-go" onclick="startShow()">
-      <span class="dot"></span>Поехали
-    </button>
-  </div>
-
+  <!-- Сцена -->
   <section class="stage">
-    <aside class="side left">
-      <div class="label"><span class="dot"></span>Мальчик</div>
-      <div class="value" id="cntBoyBig">0</div>
+    <aside class="side">
+      <div class="frame">Мальчик</div>
+      <div class="scoreValue" id="cntBoyBig">0</div>
     </aside>
 
     <div class="canvasWrap" id="stage">
       <canvas id="scene"></canvas>
       <canvas id="confetti" class="hidden" style="position:absolute;inset:0;"></canvas>
 
+      <!-- Оверлей победителя -->
       <div id="overlay" class="overlay">
         <div class="glow" id="glow"></div>
         <div class="winnerCard">
@@ -131,28 +134,28 @@
       </div>
     </div>
 
-    <aside class="side right">
-      <div class="label"><span class="dot"></span>Девочка</div>
-      <div class="value" id="cntGirlBig">0</div>
+    <aside class="side">
+      <div class="frame">Девочка</div>
+      <div class="scoreValue" id="cntGirlBig">0</div>
     </aside>
   </section>
 </div>
 
 <script>
-/* ===== ССЫЛКА НА CSV ВАШЕГО ЛИСТА ===== */
+/* ===== ВАША ССЫЛКА НА CSV-ЛИСТ ===== */
 const SOURCE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vScUpoDoG9BZOfEGgNdecule2fc6mVQBYVCMB5JjksJLZD2Pw48jb9G1wqWqmuuBM2XS2p3lxBm3Dj8/pub?gid=1307519951&single=true&output=csv";
 
 /* ===== Настройки ===== */
 const POLL_MS = 2000;
-const FALL_DURATION = 1000;     // время падения одного шарика
-const START_SPACING_MS = 1000;  // интервал между стартами шариков (1 секунда)
-const CAPACITY = 60;            // максимальное число шариков в колбе
-const TARGET_FILL = 0.95;       // заполняем ~95% высоты
+const FALL_DURATION = 1000;     // падение шара
+const START_SPACING_MS = 1000;  // интервал между шарами
+const CAPACITY = 60;            // визуальная вместимость
+const TARGET_FILL = 0.95;
 
 /* ===== Глобальные ===== */
 const canvas = document.getElementById('scene');
 const ctx = canvas.getContext('2d');
-let jar = { x: 700, y: 820, w: 520, h: 620, neckW: 180, neckH: 70, wall: 16 };
+let jar = { x: 700, y: 820, w: 520, h: 620, neckW: 180, neckH: 70, wall: 14 };
 
 const cntBoySmall = document.getElementById('cntBoySmall');
 const cntGirlSmall= document.getElementById('cntGirlSmall');
@@ -160,55 +163,87 @@ const cntBoyBig   = document.getElementById('cntBoyBig');
 const cntGirlBig  = document.getElementById('cntGirlBig');
 const cntTotalEl  = document.getElementById('cntTotal');
 const scaleInfo   = document.getElementById('scaleInfo');
-const topbar      = document.getElementById('topbar');
-const ctaRow      = document.getElementById('ctaRow');
 
 const overlay     = document.getElementById('overlay');
 const winTitle    = document.getElementById('winTitle');
 const winSub      = document.getElementById('winSub');
 const glow        = document.getElementById('glow');
+const fsBtnTop    = document.getElementById('fsBtnTop');
 
-let serverSeq = [];   // ['boy','girl', ...]
+let serverSeq = [];
 let animatedN = 0;
 let balls = [];
 let score = { boy:0, girl:0 };
 let started = false;
-let finishShownFor = -1; // число голосов, для которых уже показывали финал
+let finishShownFor = -1;
 
-/* ========= helpers ========= */
+/* ===== Helpers ===== */
 function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
 function pluralRu(n, forms){ const n10=n%10,n100=n%100; if(n10===1&&n100!==11)return forms[0]; if(n10>=2&&n10<=4&&(n100<10||n100>=20))return forms[1]; return forms[2]; }
-function toggleFullscreen(){ if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); else document.exitFullscreen().catch(()=>{}); }
 function jarCornerRadius(){ return Math.min(90, jar.w * 0.16); }
 
-/* ========= resize & jar ========= */
+/* Полный экран с автопрятаньем кнопки */
+async function enterFullscreen(){
+  try { await document.documentElement.requestFullscreen(); } catch(e){}
+  document.body.classList.add('fs');
+  fsBtnTop?.classList.add('hidden'); // спрятать «Полный экран»
+}
+document.addEventListener('fullscreenchange', () => {
+  if (document.fullscreenElement) document.body.classList.add('fs');
+  else { document.body.classList.remove('fs'); fsBtnTop?.classList.remove('hidden'); }
+});
+
+/* ===== Resize & Jar ===== */
 function onResize(){
-  const rect = document.querySelector('.canvasWrap').getBoundingClientRect();
+  const rect = document.getElementById('stage').getBoundingClientRect();
   const dpr = Math.min(2, window.devicePixelRatio || 1);
   canvas.width = Math.floor(rect.width * dpr);
   canvas.height= Math.floor(rect.height * dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0);
-  jar.w = rect.width * 0.38;
-  jar.h = rect.height * 0.78;
+  jar.w = rect.width * 0.34;
+  jar.h = rect.height * 0.70;
   jar.x = rect.width / 2;
-  jar.y = rect.height * 0.90;
+  jar.y = rect.height * 0.87;
   jar.neckW = clamp(rect.width*0.12, 120, 220);
   jar.neckH = clamp(rect.height*0.07, 50, 90);
-  jar.wall  = clamp(rect.width*0.012, 10, 22);
-
+  jar.wall  = clamp(rect.width*0.012, 10, 18);
   sizeConfettiCanvas();
 }
 addEventListener('resize', onResize);
 
+/* Рисуем «мраморную» подставку и банку с золотом */
 function drawJar(){
   const {x,y,w,h,neckW,neckH,wall} = jar;
+
+  // Подставка
+  const baseH = Math.min(80, h*0.12);
+  const baseY = y + 8;
+  ctx.save();
+  const gradStone = ctx.createLinearGradient(0, baseY-baseH, 0, baseY+baseH);
+  gradStone.addColorStop(0, "#ffffffcc");
+  gradStone.addColorStop(1, "#e9dccf");
+  ctx.fillStyle = gradStone;
+  ctx.strokeStyle = "#cabba7";
+  ctx.lineWidth = 2;
+  // нижняя «тарелка»
+  ctx.beginPath();
+  ctx.ellipse(x, baseY, w*0.62, baseH*0.55, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  // верхняя площадка
+  ctx.beginPath();
+  ctx.ellipse(x, baseY-baseH*0.35, w*0.5, baseH*0.35, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.restore();
+
+  // Банка
+  const r = jarCornerRadius();
   ctx.save();
   ctx.translate(x - w/2, y - h);
+
+  // стекло
   ctx.lineWidth = wall;
-  ctx.strokeStyle = 'rgba(230,235,255,0.9)';
-  ctx.fillStyle = 'rgba(255,255,255,0.02)';
+  ctx.strokeStyle = "rgba(202,168,110,0.9)"; // золото
+  ctx.fillStyle = "rgba(255,255,255,0.10)";  // стекло
+
   ctx.beginPath();
-  const r = jarCornerRadius();
   ctx.moveTo(w/2 - neckW/2, 0);
   ctx.lineTo(w/2 - neckW/2, neckH);
   ctx.lineTo(w - r, neckH);
@@ -224,6 +259,14 @@ function drawJar(){
   ctx.lineTo(w/2 - neckW/2, 0);
   ctx.closePath();
   ctx.fill(); ctx.stroke();
+
+  // Золотая каёмка горлышка
+  ctx.lineWidth = wall*0.6;
+  ctx.strokeStyle = "#caa86e";
+  ctx.beginPath();
+  ctx.ellipse(w/2, 0, neckW/2, wall*0.9, 0, 0, Math.PI*2);
+  ctx.stroke();
+
   ctx.restore();
 }
 
@@ -234,60 +277,50 @@ function jarInnerRect(){
     left:   x - w/2 + wall*1.2 + r*0.05,
     right:  x + w/2 - wall*1.2 - r*0.05,
     top:    y - h + neckH + wall*1.2 + r*0.15,
-    bottom: y - wall*0.7          // ниже — шары ложатся к самому дну
+    bottom: y - wall*0.7
   };
 }
 
-/* ========= layout ========= */
+/* ===== Раскладка шаров (влезаемость + центрирование) ===== */
 function layoutPositions(totalBalls){
   const inner = jarInnerRect();
   const W = inner.right - inner.left;
   const H = inner.bottom - inner.top;
-
   const need = Math.min(totalBalls, CAPACITY);
-  if (need <= 0) return [];
+  if (need<=0) return[];
 
-  const pad = 4;                // зазор между шарами
-  const fillH = H * TARGET_FILL;
-
-  // начальная оценка колонок по соотношению сторон
-  let cols = Math.max(1, Math.round(Math.sqrt(need * (W / fillH))));
+  const pad = 4;
+  const fillH = H*TARGET_FILL;
+  let cols = Math.max(1, Math.round(Math.sqrt(need*(W/fillH))));
   cols = Math.min(need, cols);
-  let rows = Math.ceil(need / cols);
+  let rows = Math.ceil(need/cols);
 
-  // радиус ограничен шириной и высотой
-  let rW = (W / cols - pad) / 2;
-  let rH = (fillH / rows - pad) / 2;
+  let rW = (W/cols - pad)/2;
+  let rH = (fillH/rows - pad)/2;
   let r  = Math.floor(Math.max(8, Math.min(rW, rH)));
 
-  // если по высоте не влезаем — добавляем колонок (рядов станет меньше)
-  while ((rows * (2*r + pad)) > fillH && cols < need){
-    cols++;
-    rows = Math.ceil(need / cols);
-    rW = (W / cols - pad) / 2;
-    rH = (fillH / rows - pad) / 2;
+  while ((rows*(2*r+pad))>fillH && cols<need){
+    cols++; rows = Math.ceil(need/cols);
+    rW = (W/cols - pad)/2; rH = (fillH/rows - pad)/2;
     r  = Math.floor(Math.max(8, Math.min(rW, rH)));
   }
 
-  const stepX = 2*r + pad;
-  const stepY = 2*r + pad;
-  const offsetX = (W - cols*stepX) / 2;  // центрируем по горизонтали
+  const stepX = 2*r+pad, stepY = 2*r+pad;
+  const offsetX = (W - cols*stepX)/2;
 
-  const positions = [];
-  let row = 0, col = 0;
+  const positions=[];
+  let row=0,col=0;
   for (let i=0;i<need;i++){
-    const x = inner.left + offsetX + (col + 0.5)*stepX;
-    const y = inner.bottom - (row + 0.5)*stepY;
-    positions.push({x, y, r});
-    col++; if (col >= cols) { col=0; row++; }
+    const x = inner.left + offsetX + (col+0.5)*stepX;
+    const y = inner.bottom - (row+0.5)*stepY;
+    positions.push({x,y,r}); col++; if(col>=cols){col=0; row++;}
   }
   return positions;
 }
 
-/* ========= animation ========= */
+/* ===== Анимация ===== */
 function animateNewBalls(seqSlice){
   if (!seqSlice.length) return;
-
   const spacing = START_SPACING_MS;
   const fallDur = FALL_DURATION;
   const totalAfter = animatedN + seqSlice.length;
@@ -297,18 +330,14 @@ function animateNewBalls(seqSlice){
     const idx = animatedN + i;
     const color = seqSlice[i];
 
-    if (idx < CAPACITY) {
+    if (idx < CAPACITY){
       const p = positions[Math.min(positions.length-1, idx)];
       const neck = jarInnerRect();
       const startX = (jar.x - jar.neckW/2) + Math.random()*jar.neckW;
       const startY = neck.top - (80 + Math.random()*120);
-
-      balls.push({
-        color, x:startX, y:startY, tx:p.x, ty:p.y, r:p.r,
-        t0: performance.now() + i*spacing, dur: fallDur, landed:false
-      });
+      balls.push({ color, x:startX, y:startY, tx:p.x, ty:p.y, r:p.r,
+                   t0: performance.now() + i*spacing, dur: fallDur, landed:false });
     } else {
-      // сверх визуальной вместимости — только на счётчики
       setTimeout(()=>{
         if (color==='boy') score.boy++; else score.girl++;
         updateScoreUI(); checkFinish();
@@ -320,9 +349,11 @@ function animateNewBalls(seqSlice){
 
 function render(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  const grd = ctx.createRadialGradient(jar.x, jar.y-jar.h*0.5, 40, jar.x, jar.y-jar.h*0.5, 800);
-  grd.addColorStop(0,'rgba(120,140,255,0.07)'); grd.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle = grd; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // лёгкое «сияние» фона
+  const halo = ctx.createRadialGradient(jar.x, jar.y-jar.h*0.6, 20, jar.x, jar.y-jar.h*0.6, 800);
+  halo.addColorStop(0,'rgba(255,255,255,0.35)'); halo.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle = halo; ctx.fillRect(0,0,canvas.width,canvas.height);
 
   drawJar();
 
@@ -355,7 +386,7 @@ function render(){
   requestAnimationFrame(render);
 }
 
-/* ========= UI & finish ========= */
+/* ===== UI & Finish ===== */
 function updateScoreUI(){
   cntBoySmall.textContent = score.boy; cntGirlSmall.textContent= score.girl;
   cntBoyBig.textContent   = score.boy; cntGirlBig.textContent  = score.girl;
@@ -366,7 +397,7 @@ function updateScoreUI(){
 
 function checkFinish(){
   const totalNow = score.boy + score.girl;
-  if (!started || serverSeq.length === 0 || totalNow < serverSeq.length) return;
+  if (!started || serverSeq.length===0 || totalNow < serverSeq.length) return;
   if (finishShownFor === serverSeq.length) return;
 
   const winner = score.boy > score.girl ? 'boy' : (score.girl > score.boy ? 'girl' : 'tie');
@@ -392,7 +423,7 @@ function hideWinner(){
   stopConfetti();
 }
 
-/* ========= CSV ========= */
+/* ===== CSV ===== */
 function normalizeChoice(v){
   const s = (v||"").toLowerCase();
   if (s.includes("маль") || s.includes("boy") || s.includes("голуб")) return "boy";
@@ -412,7 +443,7 @@ function parseCsv(text){
   return rows;
 }
 
-/* ========= Загрузка и старт ========= */
+/* ===== Загрузка и запуск ===== */
 async function fetchSeq(){
   const url = SOURCE_URL + (SOURCE_URL.includes('?')?'&':'?') + 'nocache=' + Date.now();
   const res = await fetch(url, {cache:'no-store'});
@@ -426,7 +457,6 @@ async function fetchSeq(){
     const norm = normalizeChoice(val);
     if (norm) seq.push(norm);
   }
-
   serverSeq = seq;
   const scale = Math.max(1, Math.ceil((serverSeq.length||1)/CAPACITY));
   scaleInfo.textContent = `1 шарик = ${scale} голос${pluralRu(scale,['','а','ов'])}`;
@@ -437,8 +467,8 @@ async function startShow(){
   if (started) return;
   started = true;
 
-  try { await document.documentElement.requestFullscreen(); } catch(e) {}
-  topbar.classList.add('hidden'); ctaRow.classList.add('hidden'); document.body.classList.add('fs');
+  // Прячем «Полный экран» (если не нажали раньше) и оставляем только «Поехали»
+  fsBtnTop?.classList.add('hidden');
 
   balls = []; score = { boy:0, girl:0 }; animatedN = 0; finishShownFor = -1;
   hideWinner(); updateScoreUI();
@@ -468,12 +498,11 @@ function forceRefresh(){
   }).catch(()=>{});
 }
 
-/* ========= Конфетти ========= */
+/* ===== Конфетти ===== */
 const confettiCanvas = document.getElementById('confetti');
 const cctx = confettiCanvas.getContext('2d');
 let confettiTimer = null;
 let confettiParts = [];
-
 function sizeConfettiCanvas(){
   const rect = document.getElementById('stage').getBoundingClientRect();
   const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -481,35 +510,24 @@ function sizeConfettiCanvas(){
   confettiCanvas.height= Math.floor(rect.height * dpr);
   cctx.setTransform(dpr,0,0,dpr,0,0);
 }
-
 function startConfetti(accent){
   sizeConfettiCanvas();
   confettiCanvas.classList.remove('hidden');
   confettiParts = [];
   const colors = [accent.trim(), '#ffffff', 'rgba(255,255,255,.6)'];
-
   const W = confettiCanvas.width, H = confettiCanvas.height;
-  const count = 150;
-
+  const count = 140;
   for (let i=0;i<count;i++){
-    confettiParts.push({
-      x: Math.random()*W, y: -Math.random()*H*0.3,
-      r: 4 + Math.random()*4,
-      a: Math.random()*Math.PI*2,
-      v: 30 + Math.random()*70,
-      col: colors[i % colors.length]
-    });
+    confettiParts.push({ x:Math.random()*W, y:-Math.random()*H*0.3, r:4+Math.random()*4,
+      a:Math.random()*Math.PI*2, v:30+Math.random()*70, col:colors[i%colors.length] });
   }
-
   let last = performance.now();
   function tick(){
-    const now = performance.now();
-    const dt = Math.min(0.033, (now-last)/1000); last=now;
+    const now = performance.now(); const dt = Math.min(0.033, (now-last)/1000); last=now;
     cctx.clearRect(0,0,W,H);
     for (const p of confettiParts){
-      p.y += p.v * dt; p.x += Math.sin(p.a += dt*5) * 30 * dt;
-      cctx.beginPath(); cctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-      cctx.fillStyle = p.col; cctx.fill();
+      p.y += p.v*dt; p.x += Math.sin(p.a += dt*5) * 30 * dt;
+      cctx.beginPath(); cctx.arc(p.x,p.y,p.r,0,Math.PI*2); cctx.fillStyle=p.col; cctx.fill();
     }
     confettiTimer = requestAnimationFrame(tick);
   }
@@ -518,16 +536,11 @@ function startConfetti(accent){
 }
 function stopConfetti(){ if (confettiTimer){ cancelAnimationFrame(confettiTimer); confettiTimer=null; } confettiCanvas.classList.add('hidden'); }
 
-/* ========= boot ========= */
+/* Boot */
 onResize();
 requestAnimationFrame(render);
 fetchSeq();
 setInterval(fetchSeq, POLL_MS);
-
-document.addEventListener('fullscreenchange', () => {
-  if (document.fullscreenElement) document.body.classList.add('fs');
-  else document.body.classList.remove('fs');
-});
 </script>
 </body>
 </html>
